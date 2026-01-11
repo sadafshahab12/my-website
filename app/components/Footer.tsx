@@ -77,9 +77,11 @@ const Footer: React.FC = () => {
                 </Link>
               </li>
               <li>
-                <span className="cursor-pointer hover:text-pearion-gold transition-colors">
-                  Shipping & Returns
-                </span>
+                <Link href="/shipping-return">
+                  <span className="cursor-pointer hover:text-pearion-gold transition-colors">
+                    Shipping & Returns
+                  </span>
+                </Link>
               </li>
               <li>
                 <span className="cursor-pointer hover:text-pearion-gold transition-colors">
@@ -87,9 +89,11 @@ const Footer: React.FC = () => {
                 </span>
               </li>
               <li>
-                <span className="cursor-pointer hover:text-pearion-gold transition-colors">
-                  Privacy Policy
-                </span>
+                <Link href="/privacy-policy">
+                  <span className="cursor-pointer hover:text-pearion-gold transition-colors">
+                    Privacy Policy
+                  </span>
+                </Link>
               </li>
             </ul>
           </div>

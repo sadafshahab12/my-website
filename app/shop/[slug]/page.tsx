@@ -272,14 +272,32 @@ const ProductDetailPage: React.FC = () => {
               </button>
             </div>
 
-            <div className="grid grid-cols-2 gap-4 text-xs text-gray-500 mb-8">
-              <div className="flex items-center gap-2">
-                <Truck size={16} />
-                <span>Free shipping on orders over PKR 5,000</span>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm text-gray-600 mb-8">
+              <div className="flex items-start gap-3">
+                <Truck size={20} className="mt-1 text-pearion-dark" />
+                <div>
+                  <span className="font-semibold text-pearion-dark">
+                    Free Shipping
+                  </span>
+                  <p>
+                    On all orders over PKR 5,000. Delivered across Pakistan with
+                    tracking included.
+                  </p>
+                </div>
               </div>
-              <div className="flex items-center gap-2">
-                <Shield size={16} />
-                <span>1 Year Warranty included</span>
+
+              <div className="flex items-start gap-3">
+                <Shield size={20} className="mt-1 text-pearion-dark" />
+                <div>
+                  <span className="font-semibold text-pearion-dark">
+                    1-Year Warranty
+                  </span>
+                  <p>
+                    Covers manufacturing defects like loose clasps, broken
+                    chains, or detached pearls/stones. Wear-and-tear or
+                    accidental damage not included.
+                  </p>
+                </div>
               </div>
             </div>
 
