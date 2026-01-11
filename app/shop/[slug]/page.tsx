@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams, usePathname, useRouter } from "next/navigation";
 import { Minus, Plus, Heart, Truck, Shield } from "lucide-react";
 import { client } from "@/sanity/lib/client";
 import { urlFor } from "@/sanity/lib/image";
@@ -35,7 +35,10 @@ const ProductDetailPage: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
 
   const { addToCart } = useCart();
-
+  const pathname = usePathname();
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, [pathname]);
   useEffect(() => {
     if (!productSlug) return;
 
