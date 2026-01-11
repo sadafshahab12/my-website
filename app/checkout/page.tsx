@@ -318,8 +318,8 @@ const CheckoutPage: React.FC = () => {
                       <Image
                         src={urlFor(item.images[0]).url()}
                         alt={item.name}
-                        width={1500}
-                        height={1500}
+                        width={1000}
+                        height={1000}
                         className="w-full h-full object-cover"
                       />
                       <span className="absolute -top-1 -right-1 bg-gray-500 text-white text-[10px] w-4 h-4 flex items-center justify-center rounded-full">

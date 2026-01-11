@@ -157,8 +157,8 @@ const SearchOverlay: React.FC<SearchOverlayProps> = ({ isOpen, onClose }) => {
                         <Image
                           src={urlFor(product.images[0]).url()}
                           alt={product.images[0].alt || product.name}
-                          width={1500}
-                          height={1500}
+                          width={1000}
+                          height={1000}
                           className="w-full h-full object-cover"
                         />
                       ) : (

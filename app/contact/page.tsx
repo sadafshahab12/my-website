@@ -3,7 +3,7 @@ import { Mail, MapPin, MessageCircle } from "lucide-react";
 
 const ContactPage: React.FC = () => {
   return (
-    <div className="pt-32 pb-20 bg-white">
+    <div className="pt-35 pb-20 bg-white">
       <div className="container mx-auto px-4 md:px-8">
         <h1 className="text-4xl font-serif text-center mb-16">Get in Touch</h1>
 
@@ -39,7 +39,7 @@ const ContactPage: React.FC = () => {
                 <div>
                   <h3 className="font-semibold text-pearion-dark">Email Us</h3>
                   <p className="text-gray-500 text-sm">
-                    hello@pearioncollections.com
+                    pearioncollections@gmail.com
                   </p>
                 </div>
               </div>
@@ -49,12 +49,8 @@ const ContactPage: React.FC = () => {
                   <MapPin size={20} />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-pearion-dark">Studio</h3>
-                  <p className="text-gray-500 text-sm">
-                    123 Luxury Lane, Fashion District,
-                    <br />
-                    Lahore, Pakistan.
-                  </p>
+                  <h3 className="font-semibold text-pearion-dark">Store</h3>
+                  <p className="text-gray-500 text-sm">Karachi, Pakistan.</p>
                 </div>
               </div>
             </div>

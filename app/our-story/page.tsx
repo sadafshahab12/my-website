@@ -9,8 +9,8 @@ const OurStoryPage: React.FC = () => {
         <Image
           src="/website image/about/about banner.png"
           alt="About Pearion"
-          width={1500}
-          height={1500}
+          width={1000}
+          height={1000}
           className="w-full h-full object-cover filter brightness-[0.9]"
         />
         <div className="absolute inset-0 flex items-center justify-center text-center px-4">
@@ -46,8 +46,8 @@ const OurStoryPage: React.FC = () => {
             <Image
               src="/website image/about/begining.jpg"
               alt="Workshop"
-              width={1500}
-              height={1500}
+              width={1000}
+              height={1000}
               className="w-full h-full object-cover"
             />
           </div>
@@ -58,8 +58,8 @@ const OurStoryPage: React.FC = () => {
             <Image
               src="/website image/about/craftymanship.jpg"
               alt="Design Process"
-              width={1500}
-              height={1500}
+              width={1000}
+              height={1000}
               className="w-full h-full object-cover"
             />
           </div>

@@ -56,8 +56,8 @@ const ProductCard: React.FC<ProductCardProps> = ({
         <Image
           src={firstImageUrl}
           alt={altText}
-          width={1500}
-          height={1500}
+          width={1000}
+          height={1000}
           className="w-full h-full object-cover transform transition-transform duration-700 group-hover:scale-105"
         />
 

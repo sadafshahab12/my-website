@@ -199,7 +199,7 @@ const ShopPage: React.FC = () => {
   }
 
   return (
-    <div className="pt-24 pb-20 min-h-screen bg-white">
+    <div className="pt-35 pb-20 min-h-screen bg-white">
       <div className="container mx-auto px-4 md:px-8">
         {/* Header */}
         <div className="text-center mb-12 animate-fadeIn">

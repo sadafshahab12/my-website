@@ -6,6 +6,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useCart } from "../context/CartContext";
 import SearchOverlay from "./SearchOverlay";
+import Image from "next/image";
 
 interface NavLink {
   name: string;
@@ -63,11 +64,14 @@ const Navbar: React.FC = () => {
           </button>
 
           {/* Logo */}
-          <Link
-            href="/"
-            className="text-2xl md:text-3xl font-serif font-bold tracking-wider text-pearion-dark"
-          >
-            PEARION<span className="text-pearion-gold">.</span>
+          <Link href="/" className="flex items-center">
+            <Image
+              src="/website image/pearion logo.png"
+              alt="pearion collections logo"
+              width={1000}
+              height={1000}
+              className="h-10 md:h-14 lg:h-16 w-auto rounded-full object-contain"
+            />
           </Link>
 
           {/* Desktop Links */}
@@ -116,7 +120,7 @@ const Navbar: React.FC = () => {
 
         {/* Mobile Menu */}
         <div
-          className={`fixed inset-0 bg-white z-40 transform transition-transform duration-300 ease-in-out md:hidden flex flex-col items-center justify-center space-y-8 ${
+          className={`fixed w-full left-0 top-0 h-screen bg-white z-40 transform transition-transform duration-300 ease-in-out md:hidden flex flex-col items-center justify-center space-y-8 ${
             mobileMenuOpen ? "translate-x-0" : "-translate-x-full"
           }`}
         >

@@ -158,8 +158,8 @@ const ProductDetailPage: React.FC = () => {
               <Image
                 src={mainImageUrl}
                 alt={mainImageAlt}
-                width={1500}
-                height={1500}
+                width={1000}
+                height={1000}
                 className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-125 origin-center"
               />
               {product.promotion === "new" && (
@@ -198,8 +198,8 @@ const ProductDetailPage: React.FC = () => {
                     <Image
                       src={thumbUrl}
                       alt={thumbAlt}
-                      width={1500}
-                      height={1500}
+                      width={1000}
+                      height={1000}
                       className="w-full h-full object-cover"
                     />
                   </button>

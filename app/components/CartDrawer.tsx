@@ -65,8 +65,8 @@ const CartDrawer: React.FC = () => {
                   <Image
                     src={item.images[0]?.asset.url || ""}
                     alt={item.name}
-                    width={1500}
-                    height={1500}
+                    width={1000}
+                    height={1000}
                     className="w-full h-full object-cover"
                   />
                 </div>
