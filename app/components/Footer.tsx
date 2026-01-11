@@ -123,26 +123,56 @@ const Footer: React.FC = () => {
             &copy; 2023 Pearion Collections. All rights reserved.
           </p>
           <div className="flex space-x-6">
-            <BsInstagram
-              size={20}
-              className="text-gray-400 hover:text-pearion-gold cursor-pointer transition-colors"
-            />
-            <BsFacebook
-              size={20}
-              className="text-gray-400 hover:text-pearion-gold cursor-pointer transition-colors"
-            />
-            <BsPinterest
-              size={20}
-              className="text-gray-400 hover:text-pearion-gold cursor-pointer transition-colors"
-            />
-            <BsTiktok
-              size={20}
-              className="text-gray-400 hover:text-pearion-gold cursor-pointer transition-colors"
-            />
-            <Mail
-              size={20}
-              className="text-gray-400 hover:text-pearion-gold cursor-pointer transition-colors"
-            />
+            <Link
+              href="https://www.instagram.com/pearioncollections"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <BsInstagram
+                size={20}
+                className="text-gray-400 hover:text-pearion-gold cursor-pointer transition-colors"
+              />
+            </Link>
+
+            <Link
+              href="https://www.facebook.com/pearioncollections"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <BsFacebook
+                size={20}
+                className="text-gray-400 hover:text-pearion-gold cursor-pointer transition-colors"
+              />
+            </Link>
+
+            <Link
+              href="https://www.pinterest.com/pearioncollections"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <BsPinterest
+                size={20}
+                className="text-gray-400 hover:text-pearion-gold cursor-pointer transition-colors"
+              />
+            </Link>
+
+            <Link
+              href="https://www.tiktok.com/@pearioncollections"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <BsTiktok
+                size={20}
+                className="text-gray-400 hover:text-pearion-gold cursor-pointer transition-colors"
+              />
+            </Link>
+
+            <Link href="mailto:pearioncollections@gmail.com">
+              <Mail
+                size={20}
+                className="text-gray-400 hover:text-pearion-gold cursor-pointer transition-colors"
+              />
+            </Link>
           </div>
         </div>
       </div>

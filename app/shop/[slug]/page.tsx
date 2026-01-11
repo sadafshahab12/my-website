@@ -264,7 +264,7 @@ const ProductDetailPage: React.FC = () => {
               >
                 Add to Cart
               </button>
-              <button className="border border-gray-300 p-3 hover:border-pearion-gold hover:text-pearion-gold transition-colors text-gray-500">
+              <button className="border border-gray-300 flex justify-center items-center p-3 hover:border-pearion-gold hover:text-pearion-gold transition-colors text-gray-500">
                 <Heart size={20} />
               </button>
             </div>
