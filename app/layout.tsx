@@ -21,7 +21,6 @@ export const metadata: Metadata = {
   keywords:
     "Pearion Collections, Pearl Jewelry, Luxury Jewelry, Earrings, Necklaces, Bracelets, Gift Ideas, Pakistani Jewelry Brand, Bridal Jewelry",
   authors: [{ name: "Pearion" }],
-  viewport: "width=device-width, initial-scale=1",
   openGraph: {
     title: "Pearion Collections – Elegant Pearl & Jewelry Designs",
     description:
@@ -30,7 +29,7 @@ export const metadata: Metadata = {
     siteName: "Pearion Collections",
     images: [
       {
-        url: "/website image/pearion logo.png", 
+        url: "/website image/pearion logo.png",
         width: 1200,
         height: 630,
         alt: "Pearion Collections Jewelry",
@@ -39,7 +38,6 @@ export const metadata: Metadata = {
     locale: "en_US",
     type: "website",
   },
-
 };
 
 export default function RootLayout({
