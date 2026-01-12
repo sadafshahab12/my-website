@@ -19,15 +19,14 @@ const ShopPage: React.FC = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const initialCategory = searchParams.get("category") || "All";
+  const [selectedCategory, setSelectedCategory] = useState(initialCategory);
   const searchQuery = searchParams.get("search") || "";
-
-  const [selectedCategory, setSelectedCategory] =
-    useState<string>(initialCategory);
   const [selectedMaterial, setSelectedMaterial] = useState<string>("All");
   const [selectedColor, setSelectedColor] = useState<string>("All");
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 50000]);
   const [isFilterOpen, setIsFilterOpen] = useState<boolean>(false);
   const [sortBy, setSortBy] = useState<string>("all");
+
   const fetchProducts = async () => {
     try {
       setIsLoading(true);
@@ -92,9 +91,20 @@ const ShopPage: React.FC = () => {
   // Derived Filter Options
   const categories = useMemo(() => {
     const uniqueCats = Array.from(
-      new Set(dbProducts.map((p) => p.category?.title).filter(Boolean))
+      new Map(
+        dbProducts
+          .filter((p) => p.category)
+          .map((p) => [p.category!.slug.current, p.category!])
+      ).values()
     );
-    return ["All", ...uniqueCats];
+
+    return [
+      { title: "All", slug: "all" },
+      ...uniqueCats.map((c) => ({
+        title: c.title,
+        slug: c.slug.current,
+      })),
+    ];
   }, [dbProducts]);
 
   const materials = useMemo(
@@ -127,9 +137,8 @@ const ShopPage: React.FC = () => {
     // Apply filters
     list = list.filter((product) => {
       const categoryMatch =
-        selectedCategory.toLowerCase() === "all" ||
-        product.category?.title.toLowerCase() ===
-          selectedCategory.toLowerCase();
+        selectedCategory === "all" ||
+        product.category?.slug.current === selectedCategory;
 
       const priceMatch =
         product.price >= priceRange[0] && product.price <= priceRange[1];
@@ -252,16 +261,16 @@ const ShopPage: React.FC = () => {
                 </h3>
                 <ul className="space-y-2">
                   {categories.map((cat) => (
-                    <li key={cat}>
+                    <li key={cat.slug}>
                       <button
-                        onClick={() => setSelectedCategory(cat)}
+                        onClick={() => setSelectedCategory(cat.slug)}
                         className={`w-full text-left text-sm transition-all px-3 py-2 rounded-md ${
-                          selectedCategory === cat
+                          selectedCategory === cat.slug
                             ? "bg-pearion-gold text-white font-semibold shadow-inner"
                             : "text-gray-600 hover:text-pearion-dark hover:bg-gray-50"
                         }`}
                       >
-                        {cat}
+                        {cat.title}
                       </button>
                     </li>
                   ))}
