@@ -19,6 +19,22 @@ export const contact = defineType({
       validation: (Rule) => Rule.required().email(),
     }),
     defineField({
+      name: "phone",
+      title: "Phone Number",
+      type: "string",
+      validation: (Rule) =>
+        Rule.required()
+          .min(7)
+          .max(20)
+          .warning("Please enter a valid phone number"),
+    }),
+    defineField({
+      name: "country",
+      title: "Country",
+      type: "string",
+      validation: (Rule) => Rule.required().min(2).max(100),
+    }),
+    defineField({
       name: "subject",
       title: "Subject",
       type: "string",
@@ -32,7 +48,6 @@ export const contact = defineType({
       },
       validation: (Rule) => Rule.required(),
     }),
-
     defineField({
       name: "message",
       title: "Message",

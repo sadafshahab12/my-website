@@ -96,8 +96,9 @@ export interface Contact {
   _type: "contact";
   name: string;
   email: string;
+  phone: string;
+  country: string;
   subject: "orderInquiry" | "productQuestion" | "returnsExchange" | "other";
   message: string;
   createdAt?: string; // ISO date string
 }
-

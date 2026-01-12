@@ -3,11 +3,14 @@ import React, { useState } from "react";
 import { Mail, MapPin, MessageCircle } from "lucide-react";
 import { Toaster } from "react-hot-toast";
 import toast from "react-hot-toast";
+
 const ContactPage: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
+    phone: "",
+    country: "",
     subject: "orderInquiry",
     message: "",
   });
@@ -34,15 +37,17 @@ const ContactPage: React.FC = () => {
       const data = await res.json();
 
       if (data.success) {
-        toast.success(data.message); // ✅ show toast
+        toast.success(data.message);
         setFormData({
           name: "",
           email: "",
+          phone: "",
+          country: "",
           subject: "orderInquiry",
           message: "",
         });
       } else {
-        toast.error(data.message); // show error toast
+        toast.error(data.message);
       }
     } catch (err) {
       console.log(err);
@@ -122,6 +127,7 @@ const ContactPage: React.FC = () => {
                     name="name"
                     value={formData.name}
                     onChange={handleChange}
+                    required
                   />
                 </div>
                 <div>
@@ -135,6 +141,38 @@ const ContactPage: React.FC = () => {
                     placeholder="Your email"
                     value={formData.email}
                     onChange={handleChange}
+                    required
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <label className="block text-xs uppercase tracking-widest text-gray-500 mb-2">
+                    Phone Number
+                  </label>
+                  <input
+                    type="tel"
+                    name="phone"
+                    className="w-full bg-white border border-gray-200 p-3 focus:outline-none focus:border-pearion-gold transition-colors"
+                    placeholder="+92 300 0000000"
+                    value={formData.phone}
+                    onChange={handleChange}
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs uppercase tracking-widest text-gray-500 mb-2">
+                    Country
+                  </label>
+                  <input
+                    type="text"
+                    name="country"
+                    className="w-full bg-white border border-gray-200 p-3 focus:outline-none focus:border-pearion-gold transition-colors"
+                    placeholder="Pakistan"
+                    value={formData.country}
+                    onChange={handleChange}
+                    required
                   />
                 </div>
               </div>
@@ -146,6 +184,7 @@ const ContactPage: React.FC = () => {
                 <select
                   value={formData.subject}
                   name="subject"
+                  required
                   onChange={handleChange}
                   className="w-full bg-white border border-gray-200 p-3 focus:outline-none focus:border-pearion-gold transition-colors text-gray-600"
                 >
@@ -167,6 +206,7 @@ const ContactPage: React.FC = () => {
                   value={formData.message}
                   onChange={handleChange}
                   name="message"
+                  required
                 ></textarea>
               </div>
 
