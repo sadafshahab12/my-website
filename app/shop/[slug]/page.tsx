@@ -53,6 +53,8 @@ const ProductDetailPage: React.FC = () => {
           price,
           size,
           material,
+          tags,
+          occasions,
           category->{
               _id,
               title,
@@ -226,8 +228,8 @@ const ProductDetailPage: React.FC = () => {
             <div className="space-y-4 mb-8">
               {/* Material */}
               {product.material && (
-                <div className="flex items-center text-sm text-gray-600">
-                  <span className="w-24 font-semibold text-pearion-dark uppercase text-xs tracking-wider">
+                <div className="flex flex-col sm:flex-row sm:items-center text-sm text-gray-600 mb-2">
+                  <span className="sm:w-24 font-semibold text-pearion-dark uppercase text-xs tracking-wider mb-1 sm:mb-0">
                     Material
                   </span>
                   <span>{product.material}</span>
@@ -244,7 +246,48 @@ const ProductDetailPage: React.FC = () => {
                 </div>
               )}
             </div>
+            <div>
+              {/* Tags */}
+              {product.tags.length > 0 && (
+                <div className="flex flex-col sm:flex-row sm:items-start text-sm text-gray-600 mb-4">
+                  <span className="sm:w-24 font-semibold text-pearion-dark uppercase text-xs tracking-wider mb-2 sm:mb-0">
+                    Tags
+                  </span>
 
+                  <div className="flex flex-wrap gap-2">
+                    {product.tags.map((tag) => (
+                      <span
+                        key={tag}
+                        className="px-3 py-1 text-xs border border-gray-300 rounded-full
+                     hover:border-pearion-gold hover:text-pearion-gold transition"
+                      >
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Occasions */}
+              {product.occasions.length > 0 && (
+                <div className="flex flex-col sm:flex-row sm:items-start text-sm text-gray-600 mb-4">
+                  <span className="sm:w-24 font-semibold text-pearion-dark uppercase text-xs tracking-wider mb-2 sm:mb-0">
+                    Occasion
+                  </span>
+
+                  <div className="flex flex-wrap gap-2">
+                    {product.occasions.map((occasion) => (
+                      <span
+                        key={occasion}
+                        className="px-3 py-1 text-xs bg-gray-100 rounded-full"
+                      >
+                        {occasion}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
             <div className="flex flex-col sm:flex-row gap-4 mb-8">
               <div className="flex items-center border border-gray-300 w-full sm:w-32 justify-between px-4 py-3">
                 <button
@@ -274,7 +317,7 @@ const ProductDetailPage: React.FC = () => {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm text-gray-600 mb-8">
               <div className="flex items-start gap-3">
-                <Truck size={20} className="mt-1 text-pearion-dark" />
+                <Truck size={40} className="mt-1 text-pearion-dark" />
                 <div>
                   <span className="font-semibold text-pearion-dark">
                     Free Shipping
@@ -287,7 +330,7 @@ const ProductDetailPage: React.FC = () => {
               </div>
 
               <div className="flex items-start gap-3">
-                <Shield size={20} className="mt-1 text-pearion-dark" />
+                <Shield size={60} className="mt-1 text-pearion-dark" />
                 <div>
                   <span className="font-semibold text-pearion-dark">
                     1-Year Warranty
