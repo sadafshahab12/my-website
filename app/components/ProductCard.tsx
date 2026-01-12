@@ -91,7 +91,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
       </div>
 
       <div className="text-center">
-        <h3 className="font-serif text-lg text-pearion-dark group-hover:text-pearion-gold transition-colors duration-300 px-2">
+        <h3 className="font-serif text-sm sm:text-lg text-pearion-dark group-hover:text-pearion-gold transition-colors duration-300 px-2">
           {renderTitle()}
         </h3>
         <p className="text-sm text-gray-500 mt-1">
