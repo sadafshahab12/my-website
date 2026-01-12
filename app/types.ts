@@ -91,3 +91,13 @@ export type Review = {
 export type CheckoutProduct = Pick<Product, "_id" | "price" | "name"> & {
   quantity: number;
 };
+
+export interface Contact {
+  _type: "contact";
+  name: string;
+  email: string;
+  subject: "orderInquiry" | "productQuestion" | "returnsExchange" | "other";
+  message: string;
+  createdAt?: string; // ISO date string
+}
+

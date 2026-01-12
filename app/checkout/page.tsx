@@ -246,7 +246,7 @@ const CheckoutPage: React.FC = () => {
                     )}
                   </div>
 
-                  <div className="bg-white p-4 border border-gray-200 rounded">
+                  {/* <div className="bg-white p-4 border border-gray-200 rounded">
                     <label className="flex items-center space-x-3 cursor-pointer">
                       <input
                         type="radio"
@@ -265,7 +265,7 @@ const CheckoutPage: React.FC = () => {
                         Upload transaction receipt below.
                       </div>
                     )}
-                  </div>
+                  </div> */}
 
                   {/* Upload Receipt */}
                   <div className="mt-4">

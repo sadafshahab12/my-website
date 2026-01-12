@@ -43,7 +43,9 @@ const Navbar: React.FC = () => {
     { name: "Our Story", path: "/our-story" },
     { name: "Contact", path: "/contact" },
   ];
-
+  // if (pathname === "/studio/structure" || pathname === "/studio/vision")
+  //   return null;
+  if (pathname.startsWith("/studio")) return null;
   return (
     <>
       <nav
