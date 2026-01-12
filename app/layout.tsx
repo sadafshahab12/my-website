@@ -15,6 +15,7 @@ const outfit = Outfit({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://pearion-collections.vercel.app/"),
   title: "Pearion Collections – Elegant Pearl & Jewelry Designs",
   description:
     "Discover Pearion Collections: Premium pearl and fashion jewelry crafted for every occasion. Shop necklaces, earrings, bracelets, and gift-ready sets designed for elegance and style.",

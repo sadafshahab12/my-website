@@ -24,6 +24,18 @@ export const order = defineType({
       validation: (Rule) => Rule.required(),
     }),
     defineField({
+      name: "country",
+      title: "Country",
+      type: "string",
+      validation: (Rule) => Rule.required(),
+    }),
+    defineField({
+      name: "city",
+      title: "City",
+      type: "string",
+      validation: (Rule) => Rule.required(),
+    }),
+    defineField({
       name: "address",
       title: "Address",
       type: "string",
@@ -98,10 +110,8 @@ export const order = defineType({
           { title: "Completed", value: "completed" },
         ],
         layout: "radio",
-        
       },
       initialValue: "pending",
-  
     }),
   ],
 });

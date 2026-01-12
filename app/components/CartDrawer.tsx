@@ -6,6 +6,7 @@ import { useCart } from "../context/CartContext";
 import { useRouter } from "next/navigation";
 import { CartItem } from "../types";
 import Image from "next/image";
+import { urlFor } from "@/sanity/lib/image";
 
 const CartDrawer: React.FC = () => {
   const {
@@ -63,7 +64,11 @@ const CartDrawer: React.FC = () => {
               <div key={item._id} className="flex space-x-4">
                 <div className="w-20 h-24 bg-gray-100 shrink-0 overflow-hidden">
                   <Image
-                    src={item.images[0]?.asset.url || ""}
+                    src={
+                      item.images?.[0]
+                        ? urlFor(item.images[0]).url()
+                        : "/placeholder.png"
+                    }
                     alt={item.name}
                     width={1000}
                     height={1000}

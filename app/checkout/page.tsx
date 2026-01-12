@@ -8,8 +8,8 @@ import Image from "next/image";
 import { urlFor } from "@/sanity/lib/image";
 
 const CheckoutPage: React.FC = () => {
-  const { cart, cartTotal, clearCart } = useCart();
-  const SHIPPING_FEE = 300;
+  const { cart, cartTotal, clearCart, isCartLoaded } = useCart();
+  const SHIPPING_FEE = 250;
 
   const [step, setStep] = useState(1);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -20,16 +20,34 @@ const CheckoutPage: React.FC = () => {
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
-  const [address, setAddress] = useState("");
+  const [country, setCountry] = useState("Pakistan");
   const [city, setCity] = useState("");
+  const [address, setAddress] = useState("");
   const [postalCode, setPostalCode] = useState("");
-
   // Payment
   const [paymentMethod, setPaymentMethod] = useState<"easypaisa" | "bank">(
     "easypaisa"
   );
   const [receipt, setReceipt] = useState<File | null>(null);
 
+  if (!isCartLoaded) {
+    return (
+      <div className="pt-32 min-h-screen flex flex-col items-center justify-center bg-gray-50">
+        {/* Animated spinner */}
+        <div className="w-16 h-16 border-4 border-pearion-gold border-t-transparent rounded-full animate-spin mb-6"></div>
+
+        {/* Loading text */}
+        <p className="text-gray-700 text-lg font-serif tracking-wide">
+          Loading your checkout...
+        </p>
+
+        {/* Optional subtle note */}
+        <p className="text-gray-400 text-sm mt-2">
+          Please wait a moment while we prepare your cart.
+        </p>
+      </div>
+    );
+  }
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -53,8 +71,9 @@ const CheckoutPage: React.FC = () => {
       formData.append("lastName", lastName);
       formData.append("email", email);
       formData.append("phone", phone);
-      formData.append("address", address);
+      formData.append("country", country);
       formData.append("city", city);
+      formData.append("address", address);
       formData.append("postalCode", postalCode);
       formData.append("paymentMethod", paymentMethod);
       formData.append("totalAmount", (cartTotal + SHIPPING_FEE).toString());
@@ -174,11 +193,20 @@ const CheckoutPage: React.FC = () => {
                     <input
                       required
                       type="text"
+                      placeholder="Country"
+                      value={country}
+                      onChange={(e) => setCountry(e.target.value)}
+                      className="w-full p-3 border border-gray-300 focus:outline-none focus:border-pearion-gold"
+                    />
+                    <input
+                      required
+                      type="text"
                       placeholder="City"
                       value={city}
                       onChange={(e) => setCity(e.target.value)}
                       className="w-full p-3 border border-gray-300 focus:outline-none focus:border-pearion-gold"
                     />
+
                     <input
                       required
                       type="text"
@@ -232,7 +260,8 @@ const CheckoutPage: React.FC = () => {
                     </label>
                     {paymentMethod === "bank" && (
                       <div className="mt-4 text-gray-600 text-sm">
-                        Bank: HBL, Account #: 1234567890, Sadaf Shahab <br />
+                        Bank: MCB, Account #: 1234567890, Sadaf Shahab (Pearion
+                        Collections) <br />
                         Upload transaction receipt below.
                       </div>
                     )}

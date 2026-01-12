@@ -19,6 +19,7 @@ interface CartContextType {
   cartCount: number;
   isCartOpen: boolean;
   toggleCart: () => void;
+  isCartLoaded: boolean;
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
@@ -28,7 +29,7 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({
 }) => {
   const [cart, setCart] = useState<CartItem[]>([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
-
+  const [isCartLoaded, setIsCartLoaded] = useState(false);
   // Load cart from localStorage
   useEffect(() => {
     const savedCart = localStorage.getItem("pearion_cart");
@@ -40,6 +41,7 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({
           console.error("Failed to parse cart", e);
         }
       }
+      setIsCartLoaded(true);
     };
     cartItemSave();
   }, []);
@@ -102,6 +104,7 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({
         cartCount,
         isCartOpen,
         toggleCart,
+        isCartLoaded,
       }}
     >
       {children}

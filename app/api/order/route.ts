@@ -12,7 +12,9 @@ export async function POST(req: NextRequest) {
     const lastName = formData.get("lastName") as string;
     const email = formData.get("email") as string;
     const phone = formData.get("phone") as string;
-    const address = `${formData.get("address")}, ${formData.get("city")}, ${formData.get("postalCode")}`;
+    const country = formData.get("country") as string;
+    const city = formData.get("city") as string;
+    const address = `${formData.get("address")}, ${formData.get("postalCode")}`;
     const paymentMethod = formData.get("paymentMethod") as string;
     const totalAmount = Number(formData.get("totalAmount"));
 
@@ -44,6 +46,8 @@ export async function POST(req: NextRequest) {
       customerName: `${firstName} ${lastName}`,
       email,
       phone,
+      city,
+      country,
       address,
       paymentMethod,
       totalAmount,
