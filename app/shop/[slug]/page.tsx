@@ -12,6 +12,7 @@ import ProductCard from "@/app/components/ProductCard";
 import Link from "next/link";
 import Loading from "../loading";
 import Error from "@/app/error";
+import { FaCcMastercard } from "react-icons/fa";
 
 export type Review = {
   _id: string;
@@ -315,36 +316,59 @@ const ProductDetailPage: React.FC = () => {
               </button>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm text-gray-600 mb-8">
-              <div className="flex items-start gap-3">
-                <Truck size={40} className="mt-1 text-pearion-dark" />
-                <div>
-                  <span className="font-semibold text-pearion-dark">
-                    Free Shipping
-                  </span>
-                  <p>
-                    On all orders over PKR 5,000. Delivered across Pakistan with
-                    tracking included.
-                  </p>
+            {/* Delivery, Return & Payment */}
+            <div className="border-t border-gray-300 pt-6 mb-12">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-sm text-gray-600">
+                {/* Free Shipping */}
+                <div className="flex items-start gap-3">
+                  <Truck size={24} className="mt-1 text-pearion-dark" />
+                  <div>
+                    <span className="font-semibold text-pearion-dark block mb-1">
+                      Free Shipping
+                    </span>
+                    <p>
+                      On all orders over PKR 5,000. Delivered across Pakistan
+                      with tracking included.
+                    </p>
+                  </div>
                 </div>
-              </div>
 
-              <div className="flex items-start gap-3">
-                <Shield size={60} className="mt-1 text-pearion-dark" />
-                <div>
-                  <span className="font-semibold text-pearion-dark">
-                    1-Year Warranty
+                {/* Return Policy */}
+                <div className="flex items-start gap-3">
+                  <Shield size={24} className="mt-1 text-pearion-dark" />
+                  <div>
+                    <span className="font-semibold text-pearion-dark block mb-1">
+                      Return Policy
+                    </span>
+                    <p>2–3 days return warranty.</p>
+                    <p className="mt-1 text-gray-500 text-xs">
+                      Change of mind is not applicable.
+                    </p>
+                  </div>
+                </div>
+
+                {/* Online Payment */}
+                <div className="flex items-start gap-3">
+                  <span className="mt-1 text-pearion-dark">
+                    <FaCcMastercard
+                      size={30}
+                      className="mt-1 text-pearion-dark"
+                    />
                   </span>
-                  <p>
-                    Covers manufacturing defects like loose clasps, broken
-                    chains, or detached pearls/stones. Wear-and-tear or
-                    accidental damage not included.
-                  </p>
+                  <div>
+                    <span className="font-semibold text-pearion-dark block mb-1">
+                      Online Payment
+                    </span>
+                    <p>
+                      Pay instantly through EasyPaisa or other supported online
+                      gateways.
+                    </p>
+                  </div>
                 </div>
               </div>
             </div>
 
-            <div className="border-t pt-6 mb-12">
+            <div className="border-t border-gray-300 pt-6 mb-12">
               <h4 className="font-serif text-lg mb-2">Care Instructions</h4>
               <ul className="text-sm text-gray-500 list-disc list-inside">
                 {product.careInstructions?.map((ci, idx) => (
@@ -380,7 +404,7 @@ const ProductDetailPage: React.FC = () => {
                 </div>
               </div>
             ) : (
-              <div className="border-t pt-8">
+              <div className="border-t border-gray-300 pt-8">
                 <h2 className="font-serif text-2xl mb-6">Customer Reviews</h2>
                 <p className="text-gray-500">No reviews yet.</p>
               </div>

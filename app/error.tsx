@@ -4,24 +4,43 @@ import { useEffect } from "react";
 import Link from "next/link";
 import { RotateCcw, Mail, FileX } from "lucide-react";
 
-export default function Error({
-  error,
-  reset,
-}: {
-  error: string | Error;
+interface ErrorProps {
+  error: unknown; // accept anything
   reset?: () => void;
-}) {
-  useEffect(() => {
-    console.error(error);
-  }, [error]);
+}
 
-  // Convert Error object to string
-  const errorMessage =
-    typeof error === "string"
-      ? error
-      : error instanceof Error
-        ? error.message
-        : "Unknown error";
+export default function ErrorBoundary({ error, reset }: ErrorProps) {
+  // Type guard to safely check if an object has a string 'message' property
+  function isErrorWithMessage(error: unknown): error is { message: string } {
+    return (
+      typeof error === "object" &&
+      error !== null &&
+      "message" in error &&
+      typeof (error as { message: unknown }).message === "string"
+    );
+  }
+
+  // Convert any error to a string message
+  let errorMessage = "Unknown error";
+
+  if (typeof error === "string") {
+    errorMessage = error;
+  } else if (error instanceof Error) {
+    errorMessage = (error as Error).message;
+  } else if (isErrorWithMessage(error)) {
+    errorMessage = error.message;
+  } else {
+    try {
+      errorMessage = JSON.stringify(error);
+    } catch {
+      errorMessage = String(error);
+    }
+  }
+
+  // Log error for debugging
+  useEffect(() => {
+    console.error("Caught error:", error);
+  }, [error]);
 
   return (
     <div className="min-h-[70vh] flex flex-col items-center justify-center px-4 py-20 text-center">
@@ -38,7 +57,7 @@ export default function Error({
         Something went wrong
       </h1>
       <p className="text-slate-500 max-w-md mx-auto mb-10 leading-relaxed">
-        {errorMessage} {/* <-- safe now */}
+        {errorMessage}
       </p>
 
       <div className="flex flex-col sm:flex-row items-center gap-4">
