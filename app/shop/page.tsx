@@ -18,7 +18,7 @@ const ShopPage: React.FC = () => {
   const [dbProducts, setDbProducts] = useState<Product[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const initialCategory = searchParams.get("category") || "All";
+  const initialCategory = searchParams.get("category") || "all";
   const [selectedCategory, setSelectedCategory] = useState(initialCategory);
   const searchQuery = searchParams.get("search") || "";
   const [selectedMaterial, setSelectedMaterial] = useState<string>("All");
@@ -99,7 +99,10 @@ const ShopPage: React.FC = () => {
     );
 
     return [
+      // 👇 ADD "All" HERE (frontend only)
       { title: "All", slug: "all" },
+
+      // 👇 real categories from Sanity
       ...uniqueCats.map((c) => ({
         title: c.title,
         slug: c.slug.current,
