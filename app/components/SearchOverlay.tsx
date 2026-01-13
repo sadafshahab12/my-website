@@ -30,7 +30,7 @@ const SearchOverlay: React.FC<SearchOverlayProps> = ({ isOpen, onClose }) => {
           _id,
           name,
           price,
-          "category": category->{_id, title},
+          "category": category->{_id, title, slug},
           images[]{ asset->{url}, alt }
         }`);
 
@@ -229,7 +229,7 @@ const SearchOverlay: React.FC<SearchOverlayProps> = ({ isOpen, onClose }) => {
                       key={cat._id}
                       onClick={() => {
                         router.push(
-                          `/shop?category=${encodeURIComponent(cat.title)}`
+                          `/shop?category=${encodeURIComponent(cat.slug.current)}`
                         );
                         onClose();
                       }}
