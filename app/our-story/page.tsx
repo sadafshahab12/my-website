@@ -19,7 +19,7 @@ const OurStoryPage: React.FC = () => {
               Our Story
             </h1>
             <p className="text-xl text-gray-200 font-light italic">
-             {` "Jewelry is not just an accessory, it's a feeling."`}
+              {` "Jewelry is not just an accessory, it's a feeling."`}
             </p>
           </div>
         </div>
@@ -32,7 +32,7 @@ const OurStoryPage: React.FC = () => {
               The Beginning
             </h2>
             <p className="text-gray-600 leading-relaxed mb-4">
-             {` Pearion Collections began with a simple vision: to bridge the gap
+              {` Pearion Collections began with a simple vision: to bridge the gap
               between high-end luxury and everyday wearability. We believed that
               women shouldn't have to choose between quality and affordability.`}
             </p>
@@ -50,6 +50,37 @@ const OurStoryPage: React.FC = () => {
               height={1000}
               className="w-full h-full object-cover"
             />
+          </div>
+        </div>
+        {/* Brand Signature */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+          <div className="flex justify-center">
+            <Image
+              src="/website image/brand signature.png"
+              alt="Pearion Brand Signature"
+              width={800}
+              height={800}
+              className="object-contain"
+              priority
+            />
+          </div>
+
+          <div>
+            <h2 className="text-3xl font-serif text-pearion-dark mb-6">
+              Our Signature
+            </h2>
+            <p className="text-gray-600 leading-relaxed mb-4">
+              Our signature shell and pearl mark is more than a symbol — it is
+              the soul of Pearion. Inspired by the quiet beauty of the ocean,
+              the open shell represents femininity, protection, and
+              self-discovery.
+            </p>
+            <p className="text-gray-600 leading-relaxed">
+              The pearl within symbolizes inner strength, elegance, and timeless
+              value. Just like a pearl is formed with patience and care, every
+              Pearion piece is designed to celebrate individuality and refined
+              beauty.
+            </p>
           </div>
         </div>
 
