@@ -43,7 +43,8 @@ const SearchOverlay: React.FC<SearchOverlayProps> = ({ isOpen, onClose }) => {
           "all": *[_type == "product"]{
             _id,
             name,
-            price,
+            originalPrice,
+            discountPrice,
             slug,
             "category": category->{_id, title, slug},
             images[]{ asset->{url}, alt }
@@ -162,47 +163,60 @@ const SearchOverlay: React.FC<SearchOverlayProps> = ({ isOpen, onClose }) => {
         </form>
 
         <div className="flex-1 overflow-y-auto pb-10 custom-scrollbar">
-          {/* 1. Live Results Suggestions - Ab ye seedha product page pe jayeinge */}
           {query.length > 1 && results.length > 0 && (
             <div className="animate-slideUp">
               <h3 className="text-[10px] md:text-xs font-bold tracking-widest uppercase text-gray-400 mb-4 md:mb-6">
                 Suggestions
               </h3>
               <div className="grid grid-cols-1 gap-2 md:gap-4">
-                {results.map((product) => (
-                  <div
-                    key={product._id}
-                    onClick={() => navigateToProduct(product.slug.current)}
-                    className="flex items-center group cursor-pointer p-2 md:p-3 -mx-2 hover:bg-gray-50 rounded-xl transition-colors"
-                  >
-                    <div className="w-14 h-14 md:w-20 md:h-20 bg-gray-100 rounded-lg overflow-hidden shrink-0">
-                      {product.images?.[0]?.asset?.url ? (
-                        <Image
-                          src={urlFor(product.images[0]).url()}
-                          alt={product.images[0].alt || product.name}
-                          width={80}
-                          height={80}
-                          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                        />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center text-gray-400 text-[10px]">
-                          No Image
-                        </div>
-                      )}
+                {results.map((product) => {
+                  const activePrice =
+                    product.discountPrice && product.discountPrice > 0
+                      ? product.discountPrice
+                      : product.originalPrice;
+                  return (
+                    <div
+                      key={product._id}
+                      onClick={() => navigateToProduct(product.slug.current)}
+                      className="flex items-center group cursor-pointer p-2 md:p-3 -mx-2 hover:bg-gray-50 rounded-xl transition-colors"
+                    >
+                      <div className="w-14 h-14 md:w-20 md:h-20 bg-gray-100 rounded-lg overflow-hidden shrink-0">
+                        {product.images?.[0]?.asset?.url ? (
+                          <Image
+                            src={urlFor(product.images[0]).url()}
+                            alt={product.images[0].alt || product.name}
+                            width={80}
+                            height={80}
+                            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                          />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center text-gray-400 text-[10px]">
+                            No Image
+                          </div>
+                        )}
+                      </div>
+                      <div className="ml-3 md:ml-4 flex-1 min-w-0">
+                        <h4 className="font-serif text-base md:text-xl text-pearion-dark truncate group-hover:text-pearion-gold transition-colors">
+                          {product.name}
+                        </h4>
+                        <p className="text-xs md:text-sm text-gray-500">
+                          {product.category?.title}
+                        </p>
+                      </div>
+                      <div className="text-right ml-2">
+                        <span className="text-sm md:text-base font-bold text-gray-900 block">
+                          PKR {activePrice.toLocaleString()}
+                        </span>
+
+                        {product.discountPrice && product.discountPrice > 0 && (
+                          <span className="text-[10px] md:text-xs text-gray-400 line-through block">
+                            PKR {product.originalPrice.toLocaleString()}
+                          </span>
+                        )}
+                      </div>
                     </div>
-                    <div className="ml-3 md:ml-4 flex-1 min-w-0">
-                      <h4 className="font-serif text-base md:text-xl text-pearion-dark truncate group-hover:text-pearion-gold transition-colors">
-                        {product.name}
-                      </h4>
-                      <p className="text-xs md:text-sm text-gray-500">
-                        {product.category?.title}
-                      </p>
-                    </div>
-                    <div className="text-sm md:text-base font-medium text-gray-900 ml-2">
-                      PKR {product.price.toLocaleString()}
-                    </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
           )}
