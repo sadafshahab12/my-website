@@ -16,7 +16,17 @@ const ProductCard: React.FC<ProductCardProps> = ({
   highlight = "",
 }) => {
   const { addToCart } = useCart();
+  const isNew = () => {
+    if (product.promotion !== "new") return false;
 
+    const createdDate = new Date(product._createdAt);
+    const currentDate = new Date();
+
+    const diffInDays =
+      (currentDate.getTime() - createdDate.getTime()) / (1000 * 60 * 60 * 24);
+
+    return diffInDays <= 7;
+  };
   const handleQuickAdd = (e: React.MouseEvent) => {
     e.preventDefault(); // Prevent navigation
     addToCart(product);
@@ -27,7 +37,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
 
     const regex = new RegExp(
       `(${highlight.trim().split(/\s+/).join("|")})`,
-      "gi"
+      "gi",
     );
     return product.name.split(regex).map((part, i) =>
       regex.test(part) ? (
@@ -39,7 +49,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
         </span>
       ) : (
         part
-      )
+      ),
     );
   };
 
@@ -62,14 +72,14 @@ const ProductCard: React.FC<ProductCardProps> = ({
         />
 
         <div className="absolute top-2 left-2 flex gap-1">
-          {product.promotion === "new" && (
+          {isNew() && (
             <span className="px-2 py-1 text-xs bg-black text-white rounded">
               New
             </span>
           )}
 
           {product.promotion === "bestseller" && (
-            <span className="px-2 py-1 text-xs bg-gold text-white rounded">
+            <span className="px-2 py-1 text-xs bg-gold text-white rounded bg-red-400">
               Best Seller
             </span>
           )}

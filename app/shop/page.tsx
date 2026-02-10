@@ -22,6 +22,7 @@ const ShopPage: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState(initialCategory);
   const searchQuery = searchParams.get("search") || "";
   const [selectedMaterial, setSelectedMaterial] = useState<string>("All");
+  const [selectedOccasion, setSelectedOccasion] = useState<string>("All");
   const [selectedColor, setSelectedColor] = useState<string>("All");
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 50000]);
   const [isFilterOpen, setIsFilterOpen] = useState<boolean>(false);
@@ -40,7 +41,6 @@ const ShopPage: React.FC = () => {
   name,
   description,
   price,
-  size,
   material,
   category->{
     _id,
@@ -49,8 +49,6 @@ const ShopPage: React.FC = () => {
   },
   colors,
   occasions,
-  tags,
-  careInstructions,
   promotion,
   slug,
   images[]{
@@ -72,7 +70,7 @@ const ShopPage: React.FC = () => {
     } catch (err) {
       console.error("Sanity fetch error:", err);
       setError(
-        "Oops! Something went wrong. Please check your internet connection and try again."
+        "Oops! Something went wrong. Please check your internet connection and try again.",
       );
       setIsLoading(false);
     }
@@ -81,21 +79,26 @@ const ShopPage: React.FC = () => {
     fetchProducts();
   }, []);
 
-  // Sync Category with URL
   useEffect(() => {
     setSelectedCategory(initialCategory);
   }, [initialCategory]);
 
-  // Derived Filter Options
-  // const categories = ["All", "Necklaces", "Earrings", "Bracelets", "Rings"];
-  // Derived Filter Options
+  const maxProductPrice = useMemo(() => {
+    if (dbProducts.length === 0) return 50000; // Fallback
+    return Math.max(...dbProducts.map((p) => p.price));
+  }, [dbProducts]);
+  useEffect(() => {
+    if (dbProducts.length > 0) {
+      setPriceRange([0, maxProductPrice]);
+    }
+  }, [dbProducts, maxProductPrice]);
   const categories = useMemo(() => {
     const uniqueCats = Array.from(
       new Map(
         dbProducts
           .filter((p) => p.category)
-          .map((p) => [p.category!.slug.current, p.category!])
-      ).values()
+          .map((p) => [p.category!.slug.current, p.category!]),
+      ).values(),
     );
 
     return [
@@ -114,10 +117,10 @@ const ShopPage: React.FC = () => {
     () => [
       "All",
       ...Array.from(
-        new Set(dbProducts.flatMap((p) => p.material?.split(" / ") || []))
+        new Set(dbProducts.flatMap((p) => p.material?.split(" / ") || [])),
       ),
     ],
-    [dbProducts]
+    [dbProducts],
   );
 
   const colors = useMemo(
@@ -125,9 +128,15 @@ const ShopPage: React.FC = () => {
       "All",
       ...Array.from(new Set(dbProducts.flatMap((p) => p.colors || []))),
     ],
-    [dbProducts]
+    [dbProducts],
   );
-
+  const occasions = useMemo(
+    () => [
+      "All",
+      ...Array.from(new Set(dbProducts.flatMap((p) => p.occasions || []))),
+    ],
+    [dbProducts],
+  );
   // Filtering and Sorting Logic
   const processedProducts = useMemo(() => {
     let list: Product[] = [...dbProducts];
@@ -153,7 +162,16 @@ const ShopPage: React.FC = () => {
       const colorMatch =
         selectedColor === "All" || product.colors?.includes(selectedColor);
 
-      return categoryMatch && priceMatch && materialMatch && colorMatch;
+      const occasionMatch =
+        selectedOccasion === "All" ||
+        product.occasions?.includes(selectedOccasion);
+      return (
+        categoryMatch &&
+        priceMatch &&
+        materialMatch &&
+        colorMatch &&
+        occasionMatch
+      );
     });
 
     // Sorting
@@ -162,7 +180,7 @@ const ShopPage: React.FC = () => {
     } else if (sortBy === "newest") {
       list = list.sort(
         (a, b) =>
-          new Date(b._createdAt).getTime() - new Date(a._createdAt).getTime()
+          new Date(b._createdAt).getTime() - new Date(a._createdAt).getTime(),
       );
     } else if (sortBy === "bestseller") {
       list = list.filter((p) => p.promotion === "bestseller");
@@ -180,6 +198,7 @@ const ShopPage: React.FC = () => {
     priceRange,
     selectedMaterial,
     selectedColor,
+    selectedOccasion,
     sortBy,
   ]);
 
@@ -187,7 +206,8 @@ const ShopPage: React.FC = () => {
     setSelectedCategory("All");
     setSelectedMaterial("All");
     setSelectedColor("All");
-    setPriceRange([0, 50000]);
+    setSelectedOccasion("All");
+    setPriceRange([0, maxProductPrice]);
     router.push(pathname);
   };
   const clearSearch = () => {
@@ -256,7 +276,52 @@ const ShopPage: React.FC = () => {
                   <X size={24} />
                 </button>
               </div>
-
+              {/* Price Filter */}
+              <div>
+                <h3 className="font-serif text-lg mb-4 border-b pb-2 font-semibold">
+                  Price
+                </h3>
+                <div className="flex items-center justify-between text-sm text-gray-600 mb-2">
+                  <span>PKR 0</span>
+                  {/* Dynamic label */}
+                  <span>PKR {priceRange[1].toLocaleString()}</span>
+                </div>
+                <input
+                  type="range"
+                  min="0"
+                  max={maxProductPrice} // Dynamic Max
+                  step="100"
+                  value={priceRange[1]}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                    setPriceRange([0, parseInt(e.target.value)])
+                  }
+                  className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-pearion-gold hover:accent-pearion-dark transition-colors"
+                />
+              </div>
+              <div>
+                <h3 className="font-serif text-lg mb-4 border-b pb-2 font-semibold">
+                  Occasion
+                </h3>
+                {/* Container with fixed height and scroll */}
+                <div className="max-h-40 overflow-y-auto pr-2 custom-scrollbar">
+                  <ul className="space-y-1">
+                    {occasions.map((o) => (
+                      <li key={o}>
+                        <button
+                          onClick={() => setSelectedOccasion(o)}
+                          className={`w-full text-left text-sm py-2 px-3 rounded-md transition-all ${
+                            selectedOccasion === o
+                              ? "bg-pearion-gold text-white font-medium"
+                              : "text-gray-600 hover:bg-gray-50 hover:text-pearion-gold"
+                          }`}
+                        >
+                          {o}
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
               {/* Category Filter */}
               <div>
                 <h3 className="font-serif text-lg mb-4 border-b pb-2 font-semibold">
@@ -278,28 +343,6 @@ const ShopPage: React.FC = () => {
                     </li>
                   ))}
                 </ul>
-              </div>
-
-              {/* Price Filter */}
-              <div>
-                <h3 className="font-serif text-lg mb-4 border-b pb-2 font-semibold">
-                  Price
-                </h3>
-                <div className="flex items-center justify-between text-sm text-gray-600 mb-2">
-                  <span>PKR 0</span>
-                  <span>PKR {priceRange[1].toLocaleString()}</span>
-                </div>
-                <input
-                  type="range"
-                  min="0"
-                  max="50000"
-                  step="200"
-                  value={priceRange[1]}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                    setPriceRange([0, parseInt(e.target.value)])
-                  }
-                  className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-pearion-gold hover:accent-pearion-dark transition-colors"
-                />
               </div>
 
               {/* Material Filter */}
@@ -383,7 +426,7 @@ const ShopPage: React.FC = () => {
             </div>
 
             {processedProducts.length > 0 ? (
-              <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-8">
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-8">
                 {processedProducts.map((product) => (
                   <ProductCard
                     key={product._id}

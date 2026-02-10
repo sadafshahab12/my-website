@@ -35,7 +35,28 @@ export const product = defineType({
       type: "number",
       validation: (Rule) => Rule.required().min(0),
     }),
-
+    defineField({
+      name: "discountPrice",
+      title: "Discount Price",
+      type: "number",
+      description: "Sale price of the product (leave blank if no discount)",
+      validation: (Rule) =>
+        Rule.min(0).custom((discountPrice, context) => {
+          const doc = context.document as { price?: number };
+          if (discountPrice && doc.price && discountPrice >= doc.price) {
+            return "Discount price must be lower than the original price";
+          }
+          return true;
+        }),
+    }),
+    defineField({
+      name: "isTrending",
+      title: "Is Trending?",
+      description:
+        "Check this to show this product in the search overlay trending section",
+      type: "boolean",
+      initialValue: false,
+    }),
     defineField({
       name: "promotion",
       title: "Promotion Status",

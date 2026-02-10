@@ -55,8 +55,11 @@ export type Product = {
   name: string;
   description: string;
   price: number;
+  discountPrice?: number;
+
   size: string;
   material: string;
+  isTrending?: boolean;
   category: Category;
   promotion:
     | "none"

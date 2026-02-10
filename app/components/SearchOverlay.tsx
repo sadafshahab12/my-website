@@ -18,46 +18,65 @@ const SearchOverlay: React.FC<SearchOverlayProps> = ({ isOpen, onClose }) => {
   const [query, setQuery] = useState<string>("");
   const [results, setResults] = useState<Product[]>([]);
   const [allProducts, setAllProducts] = useState<Product[]>([]);
+  const [trendingItems, setTrendingItems] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const inputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
 
-  // Fetch products from Sanity
+  // 1. Prevent body scroll when overlay is open
   useEffect(() => {
-    const fetchProducts = async () => {
+    if (isOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "unset";
+    }
+    return () => {
+      document.body.style.overflow = "unset";
+    };
+  }, [isOpen]);
+
+  // 2. Fetch Data (Slug included for Trending)
+  useEffect(() => {
+    const fetchSearchData = async () => {
       try {
-        const data: Product[] = await client.fetch(`*[_type == "product"]{
-          _id,
-          name,
-          price,
-          "category": category->{_id, title, slug},
-          images[]{ asset->{url}, alt }
+        const data = await client.fetch(`{
+          "all": *[_type == "product"]{
+            _id,
+            name,
+            price,
+            slug,
+            "category": category->{_id, title, slug},
+            images[]{ asset->{url}, alt }
+          },
+          "trending": *[_type == "product" && isTrending == true][0...6]{
+            _id,
+            name,
+            slug
+          }
         }`);
 
-        setAllProducts(data);
+        setAllProducts(data.all);
+        setTrendingItems(data.trending);
 
-        // Extract unique categories
         const uniqueCategories = Array.from(
           new Map(
-            data
-              .map((p) => p.category)
+            data.all
+              .map((p: Product) => p.category)
               .filter(Boolean)
-              .map((cat) => [cat._id, cat])
-          ).values()
+              .map((cat: Category) => [cat._id, cat]),
+          ).values(),
         );
-
-        setCategories(uniqueCategories);
+        setCategories(uniqueCategories as Category[]);
       } catch (err) {
-        console.error("Error fetching products:", err);
+        console.error("Error fetching search data:", err);
       }
     };
-
-    fetchProducts();
+    fetchSearchData();
   }, []);
 
-  // Focus input when overlay opens
+  // 3. Focus & Reset
   useEffect(() => {
-    const toggleSearch = () => {
+    const toggleMenu = () => {
       if (isOpen && inputRef.current) {
         setTimeout(() => inputRef.current?.focus(), 100);
       }
@@ -66,12 +85,12 @@ const SearchOverlay: React.FC<SearchOverlayProps> = ({ isOpen, onClose }) => {
         setResults([]);
       }
     };
-    toggleSearch();
+    toggleMenu();
   }, [isOpen]);
 
-  // Handle search input
+  // 4. Live Search Logic
   useEffect(() => {
-    const searchQueryWithProduct = () => {
+    const searchQuery = () => {
       if (query.length > 1 && allProducts.length > 0) {
         const matches = searchProducts(allProducts, query);
         setResults(matches.slice(0, 4));
@@ -79,15 +98,22 @@ const SearchOverlay: React.FC<SearchOverlayProps> = ({ isOpen, onClose }) => {
         setResults([]);
       }
     };
-    searchQueryWithProduct();
+    searchQuery();
   }, [query, allProducts]);
 
-  const handleSearchSubmit = (e?: React.FormEvent) => {
+  // General search submit (Shop page)
+  const handleSearchSubmit = (e?: React.FormEvent, customQuery?: string) => {
     if (e) e.preventDefault();
-    if (query.trim()) {
-      router.push(`/shop?search=${encodeURIComponent(query)}`);
+    const finalQuery = customQuery || query;
+    if (finalQuery.trim()) {
+      router.push(`/shop?search=${encodeURIComponent(finalQuery)}`);
       onClose();
     }
+  };
+
+  const navigateToProduct = (slug: string) => {
+    router.push(`/shop/${slug}`);
+    onClose();
   };
 
   // Close on Escape
@@ -102,140 +128,128 @@ const SearchOverlay: React.FC<SearchOverlayProps> = ({ isOpen, onClose }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-70 bg-white/95 backdrop-blur-md animate-fadeIn flex flex-col">
-      {/* Header / Close */}
-      <div className="container mx-auto px-4 py-6 flex justify-end">
+    <div className="fixed inset-0 z-100 bg-white/98 backdrop-blur-md animate-fadeIn flex flex-col h-screen w-full">
+      {/* Header */}
+      <div className="w-full px-4 py-4 md:py-6 flex justify-end shrink-0">
         <button
           onClick={onClose}
-          className="p-2 text-gray-400 hover:text-pearion-dark transition-colors rounded-full hover:bg-gray-100"
-          aria-label="Close search"
+          className="p-2 text-gray-500 hover:text-pearion-dark transition-colors rounded-full hover:bg-gray-100"
         >
-          <X size={28} />
+          <X size={24} className="md:w-7 md:h-7" />
         </button>
       </div>
 
-      {/* Main Search Area */}
-      <div className="flex-1 container mx-auto px-4 md:px-8 max-w-4xl flex flex-col pt-4 md:pt-16">
-        <form onSubmit={handleSearchSubmit} className="relative mb-12">
+      <div className="flex-1 flex flex-col overflow-hidden container mx-auto px-4 md:px-8 max-w-5xl">
+        {/* Search Input Form */}
+        <form
+          onSubmit={handleSearchSubmit}
+          className="relative mb-6 md:mb-10 shrink-0"
+        >
           <input
             ref={inputRef}
             type="text"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search for jewellery..."
-            className="w-full bg-transparent border-b-2 border-gray-200 text-3xl md:text-5xl font-serif text-pearion-dark placeholder-gray-300 focus:outline-none focus:border-pearion-gold transition-colors pb-4"
+            placeholder="Search jewellery..."
+            className="w-full bg-transparent border-b border-gray-200 text-2xl md:text-5xl font-serif text-pearion-dark placeholder-gray-300 focus:outline-none focus:border-pearion-gold transition-colors pb-3 md:pb-6 pr-10"
           />
           <button
             type="submit"
-            className="absolute right-0 bottom-4 text-pearion-dark hover:text-pearion-gold transition-colors"
+            className="absolute right-0 bottom-3 md:bottom-6 text-pearion-dark hover:text-pearion-gold transition-colors"
           >
-            <ArrowRight size={32} />
+            <ArrowRight size={24} className="md:w-8 md:h-8" />
           </button>
         </form>
 
-        <div className="flex-1 overflow-y-auto pb-20">
-          {/* Quick Suggestions */}
+        <div className="flex-1 overflow-y-auto pb-10 custom-scrollbar">
+          {/* 1. Live Results Suggestions - Ab ye seedha product page pe jayeinge */}
           {query.length > 1 && results.length > 0 && (
             <div className="animate-slideUp">
-              <h3 className="text-xs font-bold tracking-widest uppercase text-gray-400 mb-6">
+              <h3 className="text-[10px] md:text-xs font-bold tracking-widest uppercase text-gray-400 mb-4 md:mb-6">
                 Suggestions
               </h3>
-              <div className="space-y-4">
+              <div className="grid grid-cols-1 gap-2 md:gap-4">
                 {results.map((product) => (
                   <div
                     key={product._id}
-                    onClick={() => {
-                      router.push(
-                        `/shop?search=${encodeURIComponent(product.name)}`
-                      );
-                      onClose();
-                    }}
-                    className="flex items-center group cursor-pointer p-2 -mx-2 hover:bg-gray-50 rounded-lg transition-colors"
+                    onClick={() => navigateToProduct(product.slug.current)}
+                    className="flex items-center group cursor-pointer p-2 md:p-3 -mx-2 hover:bg-gray-50 rounded-xl transition-colors"
                   >
-                    <div className="w-16 h-16 bg-gray-100 rounded overflow-hidden shrink-0">
+                    <div className="w-14 h-14 md:w-20 md:h-20 bg-gray-100 rounded-lg overflow-hidden shrink-0">
                       {product.images?.[0]?.asset?.url ? (
                         <Image
                           src={urlFor(product.images[0]).url()}
                           alt={product.images[0].alt || product.name}
-                          width={1000}
-                          height={1000}
-                          className="w-full h-full object-cover"
+                          width={80}
+                          height={80}
+                          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                         />
                       ) : (
-                        <div className="w-full h-full flex items-center justify-center text-gray-400 text-xs">
+                        <div className="w-full h-full flex items-center justify-center text-gray-400 text-[10px]">
                           No Image
                         </div>
                       )}
                     </div>
-                    <div className="ml-4 flex-1">
-                      <h4 className="font-serif text-lg text-pearion-dark group-hover:text-pearion-gold transition-colors">
+                    <div className="ml-3 md:ml-4 flex-1 min-w-0">
+                      <h4 className="font-serif text-base md:text-xl text-pearion-dark truncate group-hover:text-pearion-gold transition-colors">
                         {product.name}
                       </h4>
-                      <p className="text-sm text-gray-500">
+                      <p className="text-xs md:text-sm text-gray-500">
                         {product.category?.title}
                       </p>
                     </div>
-                    <div className="text-sm font-medium text-gray-900">
+                    <div className="text-sm md:text-base font-medium text-gray-900 ml-2">
                       PKR {product.price.toLocaleString()}
                     </div>
                   </div>
                 ))}
               </div>
-              <button
-                onClick={() => handleSearchSubmit()}
-                className="mt-6 text-sm font-semibold uppercase tracking-widest text-pearion-gold hover:text-pearion-dark transition-colors flex items-center gap-2"
-              >
-                View all results <ArrowRight size={14} />
-              </button>
             </div>
           )}
 
-          {/* Trending / Default */}
+          {/* 2. Dynamic Trending & Categories */}
           {query.length < 2 && (
-            <div className="animate-fadeIn">
-              <h3 className="text-xs font-bold tracking-widest uppercase text-gray-400 mb-6 flex items-center gap-2">
-                <TrendingUp size={14} /> Trending Now
-              </h3>
-              <div className="flex flex-wrap gap-3">
-                {[
-                  "Bridal Set",
-                  "Gold Rings",
-                  "Pearl Necklace",
-                  "Gift for Her",
-                  "Summer Collection",
-                ].map((term) => (
-                  <button
-                    key={term}
-                    onClick={() => {
-                      setQuery(term);
-                      router.push(`/shop?search=${encodeURIComponent(term)}`);
-                      onClose();
-                    }}
-                    className="px-4 py-2 bg-gray-50 border border-gray-100 rounded-full text-sm text-gray-600 hover:bg-pearion-gold hover:text-white hover:border-pearion-gold transition-all duration-300"
-                  >
-                    {term}
-                  </button>
-                ))}
-              </div>
+            <div className="animate-fadeIn space-y-8 md:space-y-12">
+              {/* CLEAN URL TRENDING BUTTONS */}
+              {trendingItems.length > 0 && (
+                <div>
+                  <h3 className="text-[10px] md:text-xs font-bold tracking-widest uppercase text-gray-400 mb-4 flex items-center gap-2">
+                    <TrendingUp size={14} /> Trending Now
+                  </h3>
+                  <div className="flex flex-wrap gap-2 md:gap-3">
+                    {trendingItems.map((item) => (
+                      <button
+                        key={item._id}
+                        onClick={() => navigateToProduct(item.slug.current)}
+                        className="px-3 py-1.5 md:px-5 md:py-2.5 bg-gray-50 border border-gray-100 rounded-full text-xs md:text-sm text-gray-600 hover:bg-pearion-gold hover:text-white hover:border-pearion-gold transition-all duration-300 shadow-sm"
+                      >
+                        {item.name}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
 
-              {/* Dynamic Categories */}
-              <div className="mt-12">
-                <h3 className="text-xs font-bold tracking-widest uppercase text-gray-400 mb-6">
+              {/* Categories */}
+              <div>
+                <h3 className="text-[10px] md:text-xs font-bold tracking-widest uppercase text-gray-400 mb-4">
                   Popular Categories
                 </h3>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 md:gap-4">
                   {categories.map((cat) => (
                     <div
                       key={cat._id}
                       onClick={() => {
                         router.push(
-                          `/shop?category=${encodeURIComponent(cat.slug.current)}`
+                          `/shop?category=${encodeURIComponent(cat.slug.current)}`,
                         );
                         onClose();
                       }}
-                      className="aspect-video bg-gray-100 rounded-lg flex items-center justify-center cursor-pointer hover:bg-gray-200 transition-colors"
+                      className="aspect-4/3 md:aspect-video bg-gray-50 border border-gray-100 rounded-xl flex items-center justify-center cursor-pointer hover:bg-white hover:border-pearion-gold hover:shadow-lg hover:shadow-pearion-gold/5 transition-all group"
                     >
-                      <span className="font-serif text-lg">{cat.title}</span>
+                      <span className="font-serif text-sm md:text-lg text-gray-700 group-hover:text-pearion-gold">
+                        {cat.title}
+                      </span>
                     </div>
                   ))}
                 </div>
@@ -243,15 +257,15 @@ const SearchOverlay: React.FC<SearchOverlayProps> = ({ isOpen, onClose }) => {
             </div>
           )}
 
-          {/* No results */}
+          {/* 3. No results */}
           {query.length > 1 && results.length === 0 && (
-            <div className="text-center py-10">
-              <p className="text-gray-500 mb-2">
-             {`   We couldn't find matches for "${query}"`}
+            <div className="text-center py-12 md:py-20">
+              <p className="text-gray-500 mb-3 text-sm md:text-base">
+                {`We couldn't find matches for "${query}"`}
               </p>
               <button
                 onClick={() => handleSearchSubmit()}
-                className="text-pearion-gold underline"
+                className="text-pearion-gold font-medium underline underline-offset-4"
               >
                 Search all products
               </button>

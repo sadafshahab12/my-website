@@ -52,7 +52,9 @@ const ProductDetailPage: React.FC = () => {
           name,
           description,
           price,
+          discountPrice,
           size,
+          isTrending,
           material,
           tags,
           occasions,
@@ -113,7 +115,7 @@ const ProductDetailPage: React.FC = () => {
       } catch (error) {
         console.error("Error fetching product:", error);
         setError(
-          "Unable to load product details. Please check your connection and try again."
+          "Unable to load product details. Please check your connection and try again.",
         );
       } finally {
         setLoading(false);
@@ -219,9 +221,34 @@ const ProductDetailPage: React.FC = () => {
             <h1 className="font-serif font-black text-3xl md:text-4xl text-pearion-dark mb-4">
               {product.name}
             </h1>
-            <p className="text-2xl text-gray-900 font-medium mb-6">
-              PKR {product.price.toLocaleString()}.00
-            </p>
+            <div className="flex items-center gap-3 mb-6">
+              {/* Current (Discounted) Price */}
+              <span className="text-3xl font-bold text-gray-900">
+                PKR{" "}
+                {product.discountPrice?.toLocaleString() ||
+                  product.price.toLocaleString()}
+              </span>
+
+              {product.discountPrice && (
+                <div className="flex items-center gap-2">
+                  {/* Original Strikethrough Price */}
+                  <span className="text-lg text-gray-400 line-through decoration-gray-400">
+                    PKR {product.price.toLocaleString()}
+                  </span>
+
+                  {/* Discount Percentage Badge */}
+                  <span className="bg-red-100 text-red-600 text-xs font-bold px-2 py-1 rounded">
+                    {Math.round(
+                      ((product.price - product.discountPrice) /
+                        product.price) *
+                        100,
+                    )}
+                    % OFF
+                  </span>
+                </div>
+              )}
+            </div>
+
             <p className="text-gray-600 leading-relaxed mb-8">
               {product.description}
             </p>
@@ -244,6 +271,25 @@ const ProductDetailPage: React.FC = () => {
                     Size
                   </span>
                   <span>{product.size}</span>
+                </div>
+              )}
+              {product.colors.length > 0 && (
+                <div className="flex flex-col sm:flex-row sm:items-start text-sm text-gray-600 mb-4">
+                  <span className="sm:w-24 font-semibold text-pearion-dark uppercase text-xs tracking-wider mb-2 sm:mb-0">
+                    Colors
+                  </span>
+
+                  <div className="flex flex-wrap gap-2">
+                    {product.colors.map((clr) => (
+                      <span
+                        key={clr}
+                        className="px-3 py-1 text-xs border border-gray-300 rounded-full
+                     hover:border-pearion-gold hover:text-pearion-gold transition"
+                      >
+                        {clr}
+                      </span>
+                    ))}
+                  </div>
                 </div>
               )}
             </div>
