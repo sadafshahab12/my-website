@@ -41,6 +41,7 @@ const ShopPage: React.FC = () => {
   name,
   description,
   price,
+  discountPrice,
   material,
   category->{
     _id,

@@ -104,9 +104,32 @@ const ProductCard: React.FC<ProductCardProps> = ({
         <h3 className="font-serif text-sm sm:text-lg text-pearion-dark group-hover:text-pearion-gold transition-colors duration-300 px-2">
           {renderTitle()}
         </h3>
-        <p className="text-sm text-gray-500 mt-1">
-          PKR {product.price.toLocaleString()}
-        </p>
+        <div className="mt-2 flex flex-col items-center gap-1">
+          {/* Price Row */}
+          <div className="flex items-center justify-center gap-2 flex-wrap">
+            {/* Final Price */}
+            <span className="text-lg font-bold text-gray-900">
+              PKR {(product.discountPrice || product.price).toLocaleString()}
+            </span>
+
+            {product.discountPrice && (
+              <span className="text-sm text-gray-400 line-through">
+                PKR {product.price.toLocaleString()}
+              </span>
+            )}
+          </div>
+
+          {/* Discount Badge - Placed slightly below or could be moved to the image top-right */}
+          {product.discountPrice && (
+            <span className="text-[10px] uppercase tracking-widest font-bold text-red-600 bg-red-50 px-2 py-0.5 rounded">
+              Save{" "}
+              {Math.round(
+                ((product.price - product.discountPrice) / product.price) * 100,
+              )}
+              %
+            </span>
+          )}
+        </div>
       </div>
     </Link>
   );
