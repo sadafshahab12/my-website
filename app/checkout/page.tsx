@@ -9,12 +9,11 @@ import { urlFor } from "@/sanity/lib/image";
 
 const CheckoutPage: React.FC = () => {
   const { cart, cartTotal, clearCart, isCartLoaded } = useCart();
-  const SHIPPING_FEE = 250;
+  const SHIPPING_FEE = 300;
 
   const [step, setStep] = useState(1);
   const [isProcessing, setIsProcessing] = useState(false);
   const [isCompleted, setIsCompleted] = useState(false);
-
   // Shipping info
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
@@ -26,7 +25,7 @@ const CheckoutPage: React.FC = () => {
   const [postalCode, setPostalCode] = useState("");
   // Payment
   const [paymentMethod, setPaymentMethod] = useState<"easypaisa" | "bank">(
-    "easypaisa"
+    "easypaisa",
   );
   const [receipt, setReceipt] = useState<File | null>(null);
 
@@ -58,7 +57,7 @@ const CheckoutPage: React.FC = () => {
 
     if (!receipt) {
       alert(
-        "Please upload your EasyPaisa or Bank receipt before placing the order."
+        "Please upload your EasyPaisa or Bank receipt before placing the order.",
       );
       return;
     }
@@ -334,46 +333,89 @@ const CheckoutPage: React.FC = () => {
           </div>
 
           {/* Order Summary */}
+          {/* Order Summary */}
           <div className="bg-white p-8 h-fit shadow-sm">
             <h3 className="font-serif text-xl mb-6">Order Summary</h3>
             <div className="space-y-4 mb-6 max-h-80 overflow-y-auto pr-2">
-              {cart.map((item) => (
-                <div
-                  key={item._id}
-                  className="flex justify-between items-center text-sm"
-                >
-                  <div className="flex items-center space-x-3">
-                    <div className="w-12 h-12 bg-gray-100 overflow-hidden relative">
-                      <Image
-                        src={urlFor(item.images[0]).url()}
-                        alt={item.name}
-                        width={1000}
-                        height={1000}
-                        className="w-full h-full object-cover"
-                      />
-                      <span className="absolute -top-1 -right-1 bg-gray-500 text-white text-[10px] w-4 h-4 flex items-center justify-center rounded-full">
-                        {item.quantity}
-                      </span>
+              {cart.map((item) => {
+                // Calculate active price (Discounted if exists)
+                const activePrice =
+                  item.discountPrice && item.discountPrice > 0
+                    ? item.discountPrice
+                    : item.originalPrice;
+
+                return (
+                  <div
+                    key={item._id}
+                    className="flex justify-between items-center text-sm"
+                  >
+                    <div className="flex items-center space-x-3">
+                      <div className="w-12 h-12 bg-gray-100 overflow-hidden relative">
+                        <Image
+                          src={urlFor(item.images[0]).url()}
+                          alt={item.name}
+                          width={100}
+                          height={100}
+                          className="w-full h-full object-cover"
+                        />
+                        <span className="absolute -top-1 -right-1 bg-gray-500 text-white text-[10px] w-4 h-4 flex items-center justify-center rounded-full">
+                          {item.quantity}
+                        </span>
+                      </div>
+                      <div>
+                        <p className="font-medium text-gray-800">{item.name}</p>
+                        <p className="text-gray-500 text-xs">
+                          {item.category.title}
+                        </p>
+                      </div>
                     </div>
-                    <div>
-                      <p className="font-medium text-gray-800">{item.name}</p>
-                      <p className="text-gray-500 text-xs">
-                        {item.category.title}
+
+                    <div className="text-right">
+                      {/* Display Active Price */}
+                      <p className="font-medium text-gray-900">
+                        PKR {(activePrice * item.quantity).toLocaleString()}
                       </p>
+
+                      {/* Display Struck-through Original Price if Discounted */}
+                      {item.discountPrice && item.discountPrice > 0 && (
+                        <p className="text-[10px] text-gray-400 line-through">
+                          PKR{" "}
+                          {(
+                            item.originalPrice * item.quantity
+                          ).toLocaleString()}
+                        </p>
+                      )}
                     </div>
                   </div>
-                  <span className="font-medium">
-                    PKR {(item.price * item.quantity).toLocaleString()}
-                  </span>
-                </div>
-              ))}
+                );
+              })}
             </div>
 
+            {/* Subtotal, Shipping and Total Logic */}
             <div className="border-t border-gray-100 pt-4 space-y-2 text-sm text-gray-600">
               <div className="flex justify-between">
                 <span>Subtotal</span>
                 <span>PKR {cartTotal.toLocaleString()}</span>
               </div>
+
+              {/* Optional: Show Total Savings in Summary too */}
+              {cart.some((item) => item.discountPrice) && (
+                <div className="flex justify-between text-red-600">
+                  <span>Discount Savings</span>
+                  <span>
+                    - PKR{" "}
+                    {cart
+                      .reduce((acc, item) => {
+                        const saving = item.discountPrice
+                          ? item.originalPrice - item.discountPrice
+                          : 0;
+                        return acc + saving * item.quantity;
+                      }, 0)
+                      .toLocaleString()}
+                  </span>
+                </div>
+              )}
+
               <div className="flex justify-between">
                 <span>Shipping</span>
                 <span>PKR {SHIPPING_FEE.toLocaleString()}</span>
@@ -382,7 +424,7 @@ const CheckoutPage: React.FC = () => {
 
             <div className="border-t border-gray-200 pt-4 mt-4 flex justify-between items-center">
               <span className="font-serif text-lg font-bold">Total</span>
-              <span className="font-serif text-lg font-bold">
+              <span className="font-serif text-lg font-bold text-pearion-dark">
                 PKR {(cartTotal + SHIPPING_FEE).toLocaleString()}
               </span>
             </div>

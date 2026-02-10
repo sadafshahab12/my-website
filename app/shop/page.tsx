@@ -40,7 +40,7 @@ const ShopPage: React.FC = () => {
   _createdAt,
   name,
   description,
-  price,
+  originalPrice,
   discountPrice,
   material,
   category->{
@@ -86,7 +86,7 @@ const ShopPage: React.FC = () => {
 
   const maxProductPrice = useMemo(() => {
     if (dbProducts.length === 0) return 50000; // Fallback
-    return Math.max(...dbProducts.map((p) => p.price));
+    return Math.max(...dbProducts.map((p) => p.originalPrice));
   }, [dbProducts]);
   useEffect(() => {
     if (dbProducts.length > 0) {
@@ -154,7 +154,8 @@ const ShopPage: React.FC = () => {
         product.category?.slug.current === selectedCategory;
 
       const priceMatch =
-        product.price >= priceRange[0] && product.price <= priceRange[1];
+        product.originalPrice >= priceRange[0] &&
+        product.originalPrice <= priceRange[1];
 
       const materialMatch =
         selectedMaterial === "All" ||
@@ -186,9 +187,9 @@ const ShopPage: React.FC = () => {
     } else if (sortBy === "bestseller") {
       list = list.filter((p) => p.promotion === "bestseller");
     } else if (sortBy === "price-low") {
-      list.sort((a, b) => a.price - b.price);
+      list.sort((a, b) => a.originalPrice - b.originalPrice);
     } else if (sortBy === "price-high") {
-      list.sort((a, b) => b.price - a.price);
+      list.sort((a, b) => b.originalPrice - a.originalPrice);
     }
 
     return list;

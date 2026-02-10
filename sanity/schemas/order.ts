@@ -63,10 +63,23 @@ export const order = defineType({
               validation: (Rule) => Rule.required().min(1),
             },
             {
-              name: "price",
-              title: "Price",
+              name: "originalPrice",
+              title: "Original Price",
               type: "number",
               validation: (Rule) => Rule.required().min(0),
+            },
+            {
+              name: "discountPrice",
+              title: "Discount Price",
+              type: "number",
+              description:
+                "The discount amount applied to the item (0 if none)",
+            },
+            {
+              name: "finalPrice",
+              title: "Final Price (Paid)",
+              type: "number",
+              description: "The final price paid per item, excluding quantity",
             },
           ],
         },

@@ -80,12 +80,21 @@ const CartDrawer: React.FC = () => {
                     <h3 className="font-serif text-sm font-medium text-pearion-dark">
                       {item.name}
                     </h3>
-                    <p className="text-xs text-gray-500 mt-1">
-                      {item.material}
-                    </p>
-                    <p className="text-sm font-medium mt-2">
-                      PKR {item.price.toLocaleString()}
-                    </p>
+                    <div className="flex items-center gap-2 mt-2">
+                      {/* Actual Price to pay */}
+                      <span className="text-sm font-bold text-gray-900">
+                        PKR{" "}
+                        {(
+                          item.discountPrice || item.originalPrice
+                        ).toLocaleString()}
+                      </span>
+
+                      {item.originalPrice && item.originalPrice > 0 && (
+                        <span className="text-xs text-gray-400 line-through">
+                          PKR {item.originalPrice.toLocaleString()}
+                        </span>
+                      )}
+                    </div>
                   </div>
 
                   <div className="flex justify-between items-end">
@@ -125,11 +134,50 @@ const CartDrawer: React.FC = () => {
 
         {cart.length > 0 && (
           <div className="p-6 border-t border-gray-100 bg-pearion-cream">
-            <div className="flex justify-between items-center mb-4">
-              <span className="text-sm text-gray-600">Subtotal</span>
-              <span className="font-serif text-lg font-bold">
-                PKR {cartTotal.toLocaleString()}
-              </span>
+            <div className="space-y-2 mb-4">
+              {/* 1. Total Original (Before discount) */}
+              {cart.some((item) => item.discountPrice) && (
+                <div className="flex justify-between items-center text-sm text-gray-500">
+                  <span>Total Original</span>
+                  <span className="line-through">
+                    PKR{" "}
+                    {cart
+                      .reduce(
+                        (acc, item) => acc + item.originalPrice * item.quantity,
+                        0,
+                      )
+                      .toLocaleString()}
+                  </span>
+                </div>
+              )}
+
+              {/* 2. Savings Amount */}
+              {cart.some((item) => item.discountPrice) && (
+                <div className="flex justify-between items-center text-sm">
+                  <span className="text-gray-600">Bag Discount</span>
+                  <span className="text-red-600 font-medium">
+                    - PKR{" "}
+                    {cart
+                      .reduce((acc, item) => {
+                        const saving = item.discountPrice
+                          ? item.originalPrice - item.discountPrice
+                          : 0;
+                        return acc + saving * item.quantity;
+                      }, 0)
+                      .toLocaleString()}
+                  </span>
+                </div>
+              )}
+
+              {/* 3. Final Subtotal */}
+              <div className="flex justify-between items-center pt-2 border-t border-gray-200">
+                <span className="text-base font-medium text-pearion-dark">
+                  Subtotal
+                </span>
+                <span className="font-serif text-xl font-bold text-gray-900">
+                  PKR {cartTotal.toLocaleString()}
+                </span>
+              </div>
             </div>
             <p className="text-xs text-gray-400 mb-4 text-center">
               Shipping & taxes calculated at checkout.

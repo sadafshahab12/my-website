@@ -51,7 +51,7 @@ const ProductDetailPage: React.FC = () => {
           _id,
           name,
           description,
-          price,
+          originalPrice,
           discountPrice,
           size,
           isTrending,
@@ -87,7 +87,8 @@ const ProductDetailPage: React.FC = () => {
 ] | order(_createdAt desc)[0..3]{
   _id,
   name,
-  price,
+originalPrice,
+ discountPrice,
   promotion,
   images[]{_key,_type,asset->{_id,url}, alt},
   slug
@@ -226,21 +227,21 @@ const ProductDetailPage: React.FC = () => {
               <span className="text-3xl font-bold text-gray-900">
                 PKR{" "}
                 {product.discountPrice?.toLocaleString() ||
-                  product.price.toLocaleString()}
+                  product.originalPrice.toLocaleString()}
               </span>
 
               {product.discountPrice && (
                 <div className="flex items-center gap-2">
                   {/* Original Strikethrough Price */}
                   <span className="text-lg text-gray-400 line-through decoration-gray-400">
-                    PKR {product.price.toLocaleString()}
+                    PKR {product.originalPrice.toLocaleString()}
                   </span>
 
                   {/* Discount Percentage Badge */}
                   <span className="bg-red-100 text-red-600 text-xs font-bold px-2 py-1 rounded">
                     {Math.round(
-                      ((product.price - product.discountPrice) /
-                        product.price) *
+                      ((product.originalPrice - product.discountPrice) /
+                        product.originalPrice) *
                         100,
                     )}
                     % OFF

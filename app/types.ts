@@ -54,9 +54,8 @@ export type Product = {
   _createdAt: string;
   name: string;
   description: string;
-  price: number;
+  originalPrice: number;
   discountPrice?: number;
-
   size: string;
   material: string;
   isTrending?: boolean;
@@ -91,7 +90,10 @@ export type Review = {
   };
 };
 
-export type CheckoutProduct = Pick<Product, "_id" | "price" | "name"> & {
+export type CheckoutProduct = Pick<
+  Product,
+  "_id" | "originalPrice" | "discountPrice" | "name"
+> & {
   quantity: number;
 };
 

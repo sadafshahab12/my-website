@@ -28,7 +28,7 @@ const HomePage: React.FC = () => {
   const [currentReviewIndex, setCurrentReviewIndex] = useState(0);
   const nextReview = useCallback(() => {
     setCurrentReviewIndex((prev) =>
-      reviews.length ? (prev === reviews.length - 1 ? 0 : prev + 1) : 0
+      reviews.length ? (prev === reviews.length - 1 ? 0 : prev + 1) : 0,
     );
   }, [reviews]);
 
@@ -39,7 +39,7 @@ const HomePage: React.FC = () => {
   }, [nextReview]);
   const prevReview = () => {
     setCurrentReviewIndex((prev) =>
-      prev === 0 ? reviews.length - 1 : prev - 1
+      prev === 0 ? reviews.length - 1 : prev - 1,
     );
   };
   useEffect(() => {
@@ -51,7 +51,8 @@ const HomePage: React.FC = () => {
         const productQuery = `*[_type == "product"]{
           _id,
           name,
-          price,
+  originalPrice,
+  discountPrice,
           category,
           promotion,
           slug,
@@ -165,26 +166,26 @@ const HomePage: React.FC = () => {
                 ? [...Array(8)].map((_, i) => (
                     <div
                       key={i}
-                      className="h-64 bg-gray-200 animate-pulse rounded-lg"
+                      className="h-30 sm:h-64 bg-gray-200 animate-pulse rounded-lg"
                     />
                   ))
                 : categories.map((category) => (
                     <Link
                       key={category._id}
                       href={`/shop?category=${category.slug.current}`}
-                      className="group relative h-64 overflow-hidden"
+                      className="group relative h-30 sm:h-64 overflow-hidden"
                     >
                       {category.image && (
                         <Image
                           src={category.image.asset.url}
                           alt={category.image?.alt ?? category.title}
-                          width={1000}
-                          height={1000}
+                          width={800}
+                          height={800}
                           className="w-full h-full object-cover transform transition-transform duration-700 group-hover:scale-110"
                         />
                       )}
                       <div className="absolute inset-0 bg-black/20 group-hover:bg-black/40 transition-colors duration-300 flex items-center justify-center">
-                        <span className="text-white font-serif text-xl tracking-wider border-b-2 border-transparent group-hover:border-white pb-1 transition-all">
+                        <span className="text-white font-serif text-[16px] sm:text-xl tracking-wider border-b-2 border-transparent group-hover:border-white pb-1 transition-all">
                           {category.title}
                         </span>
                       </div>
@@ -210,7 +211,7 @@ const HomePage: React.FC = () => {
               </Link>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-8">
               {loadingProducts
                 ? [...Array(4)].map((_, i) => (
                     <div
@@ -307,7 +308,7 @@ const HomePage: React.FC = () => {
 
                   {/* Review Text with Transition Container */}
                   <div className="min-h-50 flex flex-col justify-center">
-                    <p className="text-xl md:text-2xl leading-relaxed italic mb-10 text-stone-200 transition-all duration-700 ease-in-out">
+                    <p className="text-lg sm:text-xl md:text-2xl leading-relaxed italic mb-10 text-stone-200 transition-all duration-700 ease-in-out">
                       {` "${reviews[currentReviewIndex].text}"`}
                     </p>
 

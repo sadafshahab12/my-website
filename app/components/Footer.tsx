@@ -1,11 +1,40 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 
 import { Mail } from "lucide-react";
 import Link from "next/link";
 import { BsFacebook, BsInstagram, BsPinterest, BsTiktok } from "react-icons/bs";
 
 const Footer: React.FC = () => {
+  const [email, setEmail] = useState<string>("");
+  const [status, setStatus] = useState<
+    "idle" | "loading" | "success" | "error"
+  >("idle");
+  const [message, setMessage] = useState<string>("");
+
+  const handleSubscribe = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setStatus("loading");
+
+    try {
+      const res = await fetch("/api/subscribe", {
+        method: "POST",
+        body: JSON.stringify({ email }),
+        headers: { "Content-Type": "application/json" },
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) throw new Error(data.message || "Something went wrong");
+
+      setStatus("success");
+      setMessage("Thank you for joining!");
+      setEmail("");
+    } catch (err: Error | unknown) {
+      setStatus("error");
+      setMessage(err instanceof Error ? err.message : "Submission failed");
+    }
+  };
   return (
     <footer className="bg-pearion-dark text-white pt-16 pb-8">
       <div className="container mx-auto px-4 md:px-8">
@@ -108,16 +137,32 @@ const Footer: React.FC = () => {
             </p>
             <form
               className="flex flex-col space-y-3"
-              onSubmit={(e) => e.preventDefault()}
+              onSubmit={handleSubscribe}
             >
               <input
                 type="email"
+                required
+                value={email}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                  setEmail(e.target.value)
+                }
                 placeholder="Your email address"
                 className="bg-gray-800 border border-gray-700 text-white px-4 py-2 text-sm focus:outline-none focus:border-pearion-gold"
               />
-              <button className="bg-pearion-gold text-pearion-dark px-4 py-2 text-sm font-semibold uppercase tracking-wider hover:bg-white transition-colors duration-300">
-                Subscribe
+              <button
+                disabled={status === "loading"}
+                className="bg-pearion-gold text-pearion-dark px-4 py-2 text-sm font-semibold uppercase tracking-wider hover:bg-white transition-colors duration-300 disabled:bg-gray-500"
+              >
+                {status === "loading" ? "Processing..." : "Subscribe"}
               </button>
+
+              {/* Status Messages */}
+              {status === "success" && (
+                <p className="text-green-400 text-xs mt-2">{message}</p>
+              )}
+              {status === "error" && (
+                <p className="text-red-400 text-xs mt-2">{message}</p>
+              )}
             </form>
           </div>
         </div>

@@ -30,8 +30,8 @@ export const product = defineType({
     }),
 
     defineField({
-      name: "price",
-      title: "Price",
+      name: "originalPrice",
+      title: "Original Price",
       type: "number",
       validation: (Rule) => Rule.required().min(0),
     }),
@@ -42,8 +42,12 @@ export const product = defineType({
       description: "Sale price of the product (leave blank if no discount)",
       validation: (Rule) =>
         Rule.min(0).custom((discountPrice, context) => {
-          const doc = context.document as { price?: number };
-          if (discountPrice && doc.price && discountPrice >= doc.price) {
+          const doc = context.document as { originalPrice?: number };
+          if (
+            discountPrice &&
+            doc.originalPrice &&
+            discountPrice >= doc.originalPrice
+          ) {
             return "Discount price must be lower than the original price";
           }
           return true;

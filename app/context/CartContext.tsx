@@ -58,7 +58,7 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({
         return prev.map((item) =>
           item._id === product._id
             ? { ...item, quantity: item.quantity + quantity }
-            : item
+            : item,
         );
       }
       return [...prev, { ...product, quantity }];
@@ -77,8 +77,8 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({
     }
     setCart((prev) =>
       prev.map((item) =>
-        item._id === productId ? { ...item, quantity } : item
-      )
+        item._id === productId ? { ...item, quantity } : item,
+      ),
     );
   };
 
@@ -86,10 +86,15 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({
 
   const toggleCart = () => setIsCartOpen((prev) => !prev);
 
-  const cartTotal = cart.reduce(
-    (total, item) => total + item.price * item.quantity,
-    0
-  );
+  const cartTotal = cart.reduce((total, item) => {
+    // Agar discountPrice hai to wo lo, warna originalPrice
+    const activePrice =
+      item.discountPrice && item.discountPrice > 0
+        ? item.discountPrice
+        : item.originalPrice;
+
+    return total + activePrice * item.quantity;
+  }, 0);
   const cartCount = cart.reduce((count, item) => count + item.quantity, 0);
 
   return (
