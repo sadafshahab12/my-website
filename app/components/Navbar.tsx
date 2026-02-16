@@ -7,18 +7,34 @@ import { usePathname } from "next/navigation";
 import { useCart } from "../context/CartContext";
 import SearchOverlay from "./SearchOverlay";
 import Image from "next/image";
+import { client } from "@/sanity/lib/client";
 
 interface NavLink {
   name: string;
   path: string;
+  onlyIfSale?: boolean;
 }
 
 const Navbar: React.FC = () => {
   const [isScrolled, setIsScrolled] = useState<boolean>(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState<boolean>(false);
   const [searchOpen, setSearchOpen] = useState<boolean>(false);
+  const [hasSaleItems, setHasSaleItems] = useState<boolean>(false); // Sale check state
   const { cartCount, toggleCart } = useCart();
   const pathname = usePathname();
+
+  useEffect(() => {
+    const checkSale = async () => {
+      try {
+        const count = await client.fetch(`count(*[_type == "sale"])`);
+        setHasSaleItems(count > 0);
+      } catch (error) {
+        console.error("Sale fetch error:", error);
+        setHasSaleItems(false);
+      }
+    };
+    checkSale();
+  }, []);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -29,22 +45,26 @@ const Navbar: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    const menuToggle = () => {
-      setMobileMenuOpen(false);
-    };
-    menuToggle();
+    setMobileMenuOpen(false);
   }, [pathname]);
 
+  // 2. Updated NavLinks array
   const navLinks: NavLink[] = [
     { name: "Home", path: "/" },
     { name: "Shop", path: "/shop" },
-    { name: "Sale", path: "/sale" },
+    { name: "Sale", path: "/sale", onlyIfSale: true },
     { name: "Our Story", path: "/our-story" },
     { name: "FAQ", path: "/faq" },
     { name: "Contact", path: "/contact" },
   ];
 
+  // 3. Helper function to filter links
+  const visibleLinks = navLinks.filter(
+    (link) => !link.onlyIfSale || (link.onlyIfSale && hasSaleItems),
+  );
+
   if (pathname.startsWith("/studio")) return null;
+
   return (
     <>
       <nav
@@ -55,7 +75,6 @@ const Navbar: React.FC = () => {
         }`}
       >
         <div className="container mx-auto px-4 md:px-8 flex justify-between items-center">
-          {/* Mobile Menu Button */}
           <button
             className="md:hidden text-pearion-dark"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
@@ -69,15 +88,14 @@ const Navbar: React.FC = () => {
             <Image
               src="/website image/pearion logo.png"
               alt="pearion collections logo"
-              width={1000}
-              height={1000}
+              width={500}
+              height={500}
               className="h-10 md:h-14 lg:h-16 w-auto rounded-full object-contain"
             />
           </Link>
 
-          {/* Desktop Links */}
           <div className="hidden md:flex space-x-8">
-            {navLinks.map((link) => (
+            {visibleLinks.map((link) => (
               <Link
                 key={link.name}
                 href={link.path}
@@ -94,7 +112,6 @@ const Navbar: React.FC = () => {
 
           {/* Icons */}
           <div className="flex items-center space-x-5">
-            {/* Search Button */}
             <button
               onClick={() => setSearchOpen(true)}
               className="text-pearion-dark hover:text-pearion-gold transition-colors"
@@ -103,7 +120,6 @@ const Navbar: React.FC = () => {
               <Search size={20} />
             </button>
 
-            {/* Cart Button */}
             <button
               onClick={toggleCart}
               className="relative text-pearion-dark hover:text-pearion-gold transition-colors"
@@ -111,7 +127,7 @@ const Navbar: React.FC = () => {
             >
               <ShoppingBag size={20} />
               {cartCount > 0 && (
-                <span className="absolute -top-2 -right-2 bg-pearion-gold text-white text-xs w-4.5 h-4.5 flex items-center justify-center rounded-full">
+                <span className="absolute -top-2 -right-2 bg-pearion-gold text-white text-[10px] w-4.5 h-4.5 flex items-center justify-center rounded-full">
                   {cartCount}
                 </span>
               )}
@@ -119,13 +135,12 @@ const Navbar: React.FC = () => {
           </div>
         </div>
 
-        {/* Mobile Menu */}
         <div
           className={`fixed w-full left-0 top-0 h-screen bg-white z-40 transform transition-transform duration-300 ease-in-out md:hidden flex flex-col items-center justify-center space-y-8 ${
             mobileMenuOpen ? "translate-x-0" : "-translate-x-full"
           }`}
         >
-          {navLinks.map((link) => (
+          {visibleLinks.map((link) => (
             <Link
               key={link.name}
               href={link.path}
@@ -144,7 +159,6 @@ const Navbar: React.FC = () => {
         </div>
       </nav>
 
-      {/* Search Overlay */}
       <SearchOverlay isOpen={searchOpen} onClose={() => setSearchOpen(false)} />
     </>
   );
