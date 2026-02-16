@@ -20,7 +20,6 @@ const Navbar: React.FC = () => {
   const { cartCount, toggleCart } = useCart();
   const pathname = usePathname();
 
-  // Handle scroll for sticky navbar
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 20);
@@ -29,7 +28,6 @@ const Navbar: React.FC = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Close mobile menu on route change
   useEffect(() => {
     const menuToggle = () => {
       setMobileMenuOpen(false);
@@ -40,12 +38,12 @@ const Navbar: React.FC = () => {
   const navLinks: NavLink[] = [
     { name: "Home", path: "/" },
     { name: "Shop", path: "/shop" },
+    { name: "Sale", path: "/sale" },
     { name: "Our Story", path: "/our-story" },
     { name: "FAQ", path: "/faq" },
     { name: "Contact", path: "/contact" },
   ];
-  // if (pathname === "/studio/structure" || pathname === "/studio/vision")
-  //   return null;
+
   if (pathname.startsWith("/studio")) return null;
   return (
     <>

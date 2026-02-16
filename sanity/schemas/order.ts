@@ -2,9 +2,20 @@ import { defineField, defineType } from "sanity";
 
 export const order = defineType({
   name: "order",
-  title: "Order",
+  title: "All Orders",
   type: "document",
   fields: [
+    // --- Order Identification ---
+    defineField({
+      name: "orderNumber",
+      title: "Order Number",
+      type: "string",
+      description: "Unique ID (e.g., PRN-123456)",
+      readOnly: true,
+      validation: (Rule) => Rule.required(),
+    }),
+
+    // --- Customer Information ---
     defineField({
       name: "customerName",
       title: "Customer Name",
@@ -24,8 +35,8 @@ export const order = defineType({
       validation: (Rule) => Rule.required(),
     }),
     defineField({
-      name: "country",
-      title: "Country",
+      name: "address",
+      title: "Shipping Address",
       type: "string",
       validation: (Rule) => Rule.required(),
     }),
@@ -36,24 +47,27 @@ export const order = defineType({
       validation: (Rule) => Rule.required(),
     }),
     defineField({
-      name: "address",
-      title: "Address",
+      name: "postalCode",
+      title: "Postal Code",
       type: "string",
-      validation: (Rule) => Rule.required(),
     }),
+
+    // --- Products Section (The Hybrid Part) ---
     defineField({
       name: "products",
-      title: "Products",
+      title: "Ordered Items",
       type: "array",
       of: [
         {
           type: "object",
+          name: "item",
           fields: [
             {
               name: "product",
-              title: "Product",
+              title: "Product Reference",
               type: "reference",
-              to: [{ type: "product" }],
+              // YAHAN FIX HAI: Ye ab dono types ko accept karega
+              to: [{ type: "product" }, { type: "sale" }],
               validation: (Rule) => Rule.required(),
             },
             {
@@ -63,29 +77,40 @@ export const order = defineType({
               validation: (Rule) => Rule.required().min(1),
             },
             {
-              name: "originalPrice",
-              title: "Original Price",
+              name: "priceAtPurchase",
+              title: "Unit Price (Paid)",
               type: "number",
+              description: "Final price per unit at the time of checkout",
               validation: (Rule) => Rule.required().min(0),
             },
             {
-              name: "discountPrice",
-              title: "Discount Price",
-              type: "number",
-              description:
-                "The discount amount applied to the item (0 if none)",
-            },
-            {
-              name: "finalPrice",
-              title: "Final Price (Paid)",
-              type: "number",
-              description: "The final price paid per item, excluding quantity",
+              name: "itemType",
+              title: "Item Category",
+              type: "string",
+              options: {
+                list: ["product", "sale"],
+              },
+              initialValue: "product",
             },
           ],
+          preview: {
+            select: {
+              title: "product.name",
+              qty: "quantity",
+              price: "priceAtPurchase",
+            },
+            prepare({ title, qty, price }) {
+              return {
+                title: title || "Product",
+                subtitle: `Qty: ${qty} | Price: PKR ${price}`,
+              };
+            },
+          },
         },
       ],
     }),
 
+    // --- Payment Details ---
     defineField({
       name: "paymentMethod",
       title: "Payment Method",
@@ -100,31 +125,48 @@ export const order = defineType({
     }),
     defineField({
       name: "transactionScreenshot",
-      title: "Transaction Screenshot / Bank Receipt",
+      title: "Payment Receipt",
       type: "image",
       options: { hotspot: true },
-      validation: (Rule) => Rule.required(),
+      validation: (Rule) => Rule.required().error("Payment proof is mandatory"),
     }),
     defineField({
       name: "totalAmount",
-      title: "Total Amount",
+      title: "Grand Total (with Shipping)",
       type: "number",
       validation: (Rule) => Rule.required(),
     }),
+
+    // --- Order Tracking ---
     defineField({
       name: "status",
       title: "Order Status",
       type: "string",
-      validation: (Rule) => Rule.required(),
       options: {
         list: [
           { title: "Pending", value: "pending" },
           { title: "Processing", value: "processing" },
+          { title: "Shipped", value: "shipped" },
           { title: "Completed", value: "completed" },
+          { title: "Cancelled", value: "cancelled" },
         ],
         layout: "radio",
       },
       initialValue: "pending",
     }),
   ],
+  preview: {
+    select: {
+      orderNo: "orderNumber",
+      customer: "customerName",
+      amount: "totalAmount",
+      status: "status",
+    },
+    prepare({ orderNo, customer, amount, status }) {
+      return {
+        title: `#${orderNo} - ${customer}`,
+        subtitle: `PKR ${amount} | ${status.toUpperCase()}`,
+      };
+    },
+  },
 });

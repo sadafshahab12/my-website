@@ -28,7 +28,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
     return diffInDays <= 7;
   };
   const handleQuickAdd = (e: React.MouseEvent) => {
-    e.preventDefault(); // Prevent navigation
+    e.preventDefault(); 
     addToCart(product);
   };
 
@@ -53,7 +53,6 @@ const ProductCard: React.FC<ProductCardProps> = ({
     );
   };
 
-  // Safely get the first image URL
   const firstImage = product.images?.[0];
   const firstImageUrl = firstImage
     ? urlFor(firstImage).url()

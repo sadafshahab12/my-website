@@ -1,3 +1,5 @@
+import { SaleProduct } from "./types/saleType";
+
 export type CareInstruction = string;
 
 export type Color = string;
@@ -51,6 +53,7 @@ export type Category = {
 
 export type Product = {
   _id: string;
+  _type: "product";
   _createdAt: string;
   name: string;
   description: string;
@@ -80,19 +83,18 @@ export interface CartItem extends Product {
 export type Review = {
   _id: string;
   _createdAt: string;
-  name: string; // reviewer name
-  text: string; // review text
-  rating: number; // rating out of 5
+  name: string;
+  text: string;
+  rating: number;
   product?: {
-    // optional relation to a product
     _ref: string;
     _type: "reference";
   };
 };
 
-export type CheckoutProduct = Pick<
-  Product,
-  "_id" | "originalPrice" | "discountPrice" | "name"
+export type CheckoutAllProduct = Pick<
+  Product | SaleProduct,
+  "_id" | "_type" | "originalPrice" | "discountPrice" | "name"
 > & {
   quantity: number;
 };

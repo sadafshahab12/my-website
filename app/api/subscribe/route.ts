@@ -13,7 +13,6 @@ export async function POST(req: Request) {
       return NextResponse.json({ message: "Invalid email" }, { status: 400 });
     }
 
-    // Check if user already exists
     const existing = await serverClient.fetch<number>(
       `count(*[_type == "newsletter" && email == $email])`,
       { email },
@@ -26,7 +25,6 @@ export async function POST(req: Request) {
       );
     }
 
-    // Create the document
     await serverClient.create({
       _type: "newsletter",
       email,

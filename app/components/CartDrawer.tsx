@@ -4,9 +4,10 @@ import React from "react";
 import { X, Minus, Plus, Trash2 } from "lucide-react";
 import { useCart } from "../context/CartContext";
 import { useRouter } from "next/navigation";
-import { CartItem } from "../types";
+
 import Image from "next/image";
 import { urlFor } from "@/sanity/lib/image";
+import { CartItem } from "../types/saleType";
 
 const CartDrawer: React.FC = () => {
   const {
@@ -60,82 +61,93 @@ const CartDrawer: React.FC = () => {
               </button>
             </div>
           ) : (
-            cart.map((item: CartItem) => (
-              <div key={item._id} className="flex space-x-4">
-                <div className="w-20 h-24 bg-gray-100 shrink-0 overflow-hidden">
-                  <Image
-                    src={
-                      item.images?.[0]
-                        ? urlFor(item.images[0]).url()
-                        : "/placeholder.png"
-                    }
-                    alt={item.name}
-                    width={1000}
-                    height={1000}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-                <div className="flex-1 flex flex-col justify-between">
-                  <div>
-                    <h3 className="font-serif text-sm font-medium text-pearion-dark">
-                      {item.name}
-                    </h3>
-                    <div className="flex items-center gap-2 mt-2">
-                      {/* Actual Price to pay */}
-                      <span className="text-sm font-bold text-gray-900">
-                        PKR{" "}
-                        {(
-                          item.discountPrice || item.originalPrice
-                        ).toLocaleString()}
-                      </span>
+            cart.map((item: CartItem) => {
+              const isMaxStock = item.quantity >= (item.stockQuantity ?? 999);
 
-                      {item.originalPrice && item.originalPrice > 0 && (
-                        <span className="text-xs text-gray-400 line-through">
-                          PKR {item.originalPrice.toLocaleString()}
+              return (
+                <div key={item._id} className="flex space-x-4">
+                  <div className="w-20 h-24 bg-gray-100 shrink-0 overflow-hidden">
+                    <Image
+                      src={
+                        item.images?.[0]
+                          ? urlFor(item.images[0]).url()
+                          : "/placeholder.png"
+                      }
+                      alt={item.name}
+                      width={100}
+                      height={120}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+
+                  <div className="flex-1 flex flex-col justify-between">
+                    <div>
+                      <h3 className="font-serif text-sm font-medium text-pearion-dark">
+                        {item.name}
+                      </h3>
+                      <div className="flex items-center gap-2 mt-2">
+                        <span className="text-sm font-bold text-gray-900">
+                          PKR{" "}
+                          {(
+                            item.discountPrice || item.originalPrice
+                          ).toLocaleString()}
                         </span>
+                      </div>
+
+                      {isMaxStock && (
+                        <p className="text-[10px] text-[#D4AF37] font-bold mt-1 uppercase tracking-tighter animate-pulse">
+                          Maximum stock reached
+                        </p>
                       )}
                     </div>
-                  </div>
 
-                  <div className="flex justify-between items-end">
-                    <div className="flex items-center border border-gray-200">
+                    <div className="flex justify-between items-end">
+                      <div className="flex items-center border border-gray-200">
+                        <button
+                          onClick={() =>
+                            updateQuantity(item._id, item.quantity - 1)
+                          }
+                          className="p-1.5 hover:bg-gray-100 text-gray-500"
+                        >
+                          <Minus size={14} />
+                        </button>
+
+                        <span className="px-3 text-xs font-medium w-8 text-center">
+                          {item.quantity}
+                        </span>
+
+                        <button
+                          disabled={isMaxStock}
+                          onClick={() =>
+                            updateQuantity(item._id, item.quantity + 1)
+                          }
+                          className={`p-1.5 transition-colors ${
+                            isMaxStock
+                              ? "text-gray-200 cursor-not-allowed"
+                              : "hover:bg-gray-100 text-gray-500"
+                          }`}
+                        >
+                          <Plus size={14} />
+                        </button>
+                      </div>
+
                       <button
-                        onClick={() =>
-                          updateQuantity(item._id, item.quantity - 1)
-                        }
-                        className="p-1 hover:bg-gray-100 text-gray-500"
+                        onClick={() => removeFromCart(item._id)}
+                        className="text-gray-300 hover:text-red-500 transition-colors p-1"
                       >
-                        <Minus size={14} />
-                      </button>
-                      <span className="px-2 text-xs font-medium">
-                        {item.quantity}
-                      </span>
-                      <button
-                        onClick={() =>
-                          updateQuantity(item._id, item.quantity + 1)
-                        }
-                        className="p-1 hover:bg-gray-100 text-gray-500"
-                      >
-                        <Plus size={14} />
+                        <Trash2 size={16} />
                       </button>
                     </div>
-                    <button
-                      onClick={() => removeFromCart(item._id)}
-                      className="text-gray-400 hover:text-red-500 transition-colors"
-                    >
-                      <Trash2 size={16} />
-                    </button>
                   </div>
                 </div>
-              </div>
-            ))
+              );
+            })
           )}
         </div>
 
         {cart.length > 0 && (
           <div className="p-6 border-t border-gray-100 bg-pearion-cream">
             <div className="space-y-2 mb-4">
-              {/* 1. Total Original (Before discount) */}
               {cart.some((item) => item.discountPrice) && (
                 <div className="flex justify-between items-center text-sm text-gray-500">
                   <span>Total Original</span>

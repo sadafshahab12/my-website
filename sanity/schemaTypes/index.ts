@@ -5,7 +5,18 @@ import { order } from "../schemas/order";
 import { category } from "../schemas/category";
 import { contact } from "../schemas/contact";
 import { newsletter } from "../schemas/newsletter";
+import { sale } from "../schemas/sale";
+import { saleHero } from "../schemas/saleHero";
 
 export const schema: { types: SchemaTypeDefinition[] } = {
-  types: [product, review, order, category, contact, newsletter],
+  types: [
+    product,
+    review,
+    order,
+    category,
+    contact,
+    newsletter,
+    sale,
+    saleHero,
+  ],
 };

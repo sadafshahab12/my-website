@@ -7,8 +7,6 @@ import { GA_MEASUREMENT_ID, pageview } from "../lib/gtag";
 
 export default function Analytics() {
   const pathname = usePathname();
-
-  // Track page views on route change
   useEffect(() => {
     pageview(pathname);
   }, [pathname]);

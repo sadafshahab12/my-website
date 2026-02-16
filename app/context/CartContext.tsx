@@ -7,11 +7,13 @@ import React, {
   useEffect,
   ReactNode,
 } from "react";
-import { CartItem, Product } from "../types";
+import { Product } from "../types";
+import { CartItem, SaleProduct } from "../types/saleType";
+import toast from "react-hot-toast";
 
 interface CartContextType {
   cart: CartItem[];
-  addToCart: (product: Product, quantity?: number) => void;
+  addToCart: (product: Product | SaleProduct, quantity?: number) => void;
   removeFromCart: (productId: string) => void;
   updateQuantity: (productId: string, quantity: number) => void;
   clearCart: () => void;
@@ -22,6 +24,24 @@ interface CartContextType {
   isCartLoaded: boolean;
 }
 
+const showStockError = (message: string) => {
+  toast.error(message, {
+    duration: 3000,
+    style: {
+      border: "1px solid #D4AF37",
+      padding: "16px",
+      color: "#1a1a1a",
+      background: "#fff",
+      borderRadius: "0px",
+      fontSize: "14px",
+      fontFamily: "serif",
+    },
+    iconTheme: {
+      primary: "#D4AF37",
+      secondary: "#fff",
+    },
+  });
+};
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
 export const CartProvider: React.FC<{ children: ReactNode }> = ({
@@ -30,10 +50,11 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({
   const [cart, setCart] = useState<CartItem[]>([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isCartLoaded, setIsCartLoaded] = useState(false);
-  // Load cart from localStorage
+
+
   useEffect(() => {
-    const savedCart = localStorage.getItem("pearion_cart");
-    const cartItemSave = () => {
+    const saveToCart = () => {
+      const savedCart = localStorage.getItem("pearion_cart");
       if (savedCart) {
         try {
           setCart(JSON.parse(savedCart));
@@ -43,17 +64,30 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({
       }
       setIsCartLoaded(true);
     };
-    cartItemSave();
+    saveToCart();
   }, []);
 
-  // Save cart to localStorage whenever it changes
-  useEffect(() => {
-    localStorage.setItem("pearion_cart", JSON.stringify(cart));
-  }, [cart]);
 
-  const addToCart = (product: Product, quantity: number = 1) => {
+  useEffect(() => {
+    if (isCartLoaded) {
+      localStorage.setItem("pearion_cart", JSON.stringify(cart));
+    }
+  }, [cart, isCartLoaded]);
+
+  
+  const addToCart = (product: Product | SaleProduct, quantity: number = 1) => {
+    const existing = cart.find((item) => item._id === product._id);
+    const stockAvailable = (product as SaleProduct).stockQuantity ?? 999;
+    const currentInCart = existing ? existing.quantity : 0;
+
+
+    if (currentInCart + quantity > stockAvailable) {
+      toast.dismiss();
+      showStockError(`Limited Stock: Only ${stockAvailable} pieces left.`);
+      return;
+    }
+
     setCart((prev) => {
-      const existing = prev.find((item) => item._id === product._id);
       if (existing) {
         return prev.map((item) =>
           item._id === product._id
@@ -61,33 +95,62 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({
             : item,
         );
       }
-      return [...prev, { ...product, quantity }];
+
+      const newItem: CartItem = {
+        ...product,
+        _type: product._type as "product" | "sale",
+        quantity: quantity,
+        images: Array.isArray(product.images)
+          ? product.images
+          : [product.images],
+        stockQuantity:
+          "stockQuantity" in product ? product.stockQuantity : undefined,
+      };
+
+      return [...prev, newItem];
     });
+
     setIsCartOpen(true);
   };
 
-  const removeFromCart = (productId: string) => {
-    setCart((prev) => prev.filter((item) => item._id !== productId));
-  };
-
   const updateQuantity = (productId: string, quantity: number) => {
+
     if (quantity < 1) {
       removeFromCart(productId);
       return;
     }
+
+
+    const targetItem = cart.find((item) => item._id === productId);
+    if (!targetItem) return;
+
+    const limit = targetItem.stockQuantity ?? 999;
+
+    // Stock check
+    if (quantity > limit) {
+      toast.dismiss(); 
+      showStockError(
+        `We apologize, but only ${limit} pieces of this item are currently available in our collection.`,
+      );
+      return; 
+    }
+
+   
     setCart((prev) =>
       prev.map((item) =>
         item._id === productId ? { ...item, quantity } : item,
       ),
     );
   };
+  const removeFromCart = (productId: string) => {
+    setCart((prev) => prev.filter((item) => item._id !== productId));
+  };
 
   const clearCart = () => setCart([]);
-
   const toggleCart = () => setIsCartOpen((prev) => !prev);
 
   const cartTotal = cart.reduce((total, item) => {
-    // Agar discountPrice hai to wo lo, warna originalPrice
+
     const activePrice =
       item.discountPrice && item.discountPrice > 0
         ? item.discountPrice
@@ -95,6 +158,7 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({
 
     return total + activePrice * item.quantity;
   }, 0);
+
   const cartCount = cart.reduce((count, item) => count + item.quantity, 0);
 
   return (

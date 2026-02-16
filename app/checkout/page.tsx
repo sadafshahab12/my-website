@@ -6,11 +6,14 @@ import { CheckCircle } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { urlFor } from "@/sanity/lib/image";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
 
 const CheckoutPage: React.FC = () => {
-  const { cart, cartTotal, clearCart, isCartLoaded } = useCart();
-  const SHIPPING_FEE = 300;
-
+  const { cart, cartTotal, clearCart, isCartLoaded, cartCount } = useCart();
+  const SHIPPING_FEE = cartCount >= 3 ? 0 : 300;
+  const isFreeShipping = cartCount >= 3;
+  const [orderNumber, setOrderNumber] = useState<string>("");
   const [step, setStep] = useState(1);
   const [isProcessing, setIsProcessing] = useState(false);
   const [isCompleted, setIsCompleted] = useState(false);
@@ -56,9 +59,7 @@ const CheckoutPage: React.FC = () => {
     }
 
     if (!receipt) {
-      alert(
-        "Please upload your EasyPaisa or Bank receipt before placing the order.",
-      );
+      alert("Please upload your payment receipt before placing the order.");
       return;
     }
 
@@ -77,8 +78,9 @@ const CheckoutPage: React.FC = () => {
       formData.append("paymentMethod", paymentMethod);
       formData.append("totalAmount", (cartTotal + SHIPPING_FEE).toString());
       formData.append("receipt", receipt);
-      formData.append("products", JSON.stringify(cart));
+      formData.append("products", JSON.stringify(cart)); // Sanity will handle _type automatically
 
+      // Ab hamesha isi endpoint par bhejain
       const res = await fetch("/api/order", {
         method: "POST",
         body: formData,
@@ -86,8 +88,8 @@ const CheckoutPage: React.FC = () => {
 
       const data = await res.json();
       if (data.success) {
+        setOrderNumber(data.orderNumber);
         setIsCompleted(true);
-        clearCart();
       } else {
         alert(data.error || "Error placing order. Try again.");
       }
@@ -98,25 +100,142 @@ const CheckoutPage: React.FC = () => {
       setIsProcessing(false);
     }
   };
+  const downloadReceipt = () => {
+    const doc = new jsPDF();
+    const goldColor = [184, 134, 11]; // Pearion Gold RGB
+    const darkColor = [33, 33, 33]; // Dark Text
 
+    // --- Header Section ---
+    doc.setFont("serif", "bold");
+    doc.setTextColor(goldColor[0], goldColor[1], goldColor[2]);
+    doc.setFontSize(24);
+    doc.text("PEARION COLLECTIONS", 105, 25, { align: "center" });
+
+    doc.setDrawColor(200, 200, 200);
+    doc.line(20, 32, 190, 32); // Horizontal Line
+
+    // --- Order Info ---
+    doc.setFontSize(10);
+    doc.setTextColor(100);
+    doc.setFont("helvetica", "normal");
+    doc.text(`DATE: ${new Date().toLocaleDateString()}`, 190, 42, {
+      align: "right",
+    });
+
+    doc.setTextColor(darkColor[0], darkColor[1], darkColor[2]);
+    doc.setFontSize(11);
+    doc.text("BILL TO:", 20, 45);
+    doc.setFont("helvetica", "bold");
+    doc.text(`${firstName.toUpperCase()} ${lastName.toUpperCase()}`, 20, 52);
+    doc.setFont("helvetica", "normal");
+    doc.text(`${address}`, 20, 58);
+    doc.text(`${city}, ${postalCode}`, 20, 64);
+    doc.text(`Phone: ${phone}`, 20, 70);
+
+    doc.setFont("helvetica", "bold");
+    doc.text(`ORDER ID: #${orderNumber}`, 190, 52, { align: "right" });
+
+    // --- Table Section ---
+    const tableData = cart.map((item) => [
+      {
+        content: item.name,
+        styles: { fontStyle: "bold" as const },
+      },
+      item.quantity,
+      `PKR ${(item.discountPrice || item.originalPrice).toLocaleString()}`,
+      `PKR ${((item.discountPrice || item.originalPrice) * item.quantity).toLocaleString()}`,
+    ]);
+
+    autoTable(doc, {
+      startY: 80,
+      head: [["PRODUCT DETAILS", "QTY", "UNIT PRICE", "TOTAL"]],
+      body: tableData,
+      theme: "striped",
+      headStyles: {
+        fillColor: [33, 33, 33],
+        textColor: [255, 255, 255],
+        fontSize: 10,
+        halign: "center",
+      },
+      columnStyles: {
+        1: { halign: "center" },
+        2: { halign: "right" },
+        3: { halign: "right" },
+      },
+      styles: { fontSize: 9, cellPadding: 5 },
+    });
+
+    // --- Summary Section ---
+    const finalY = doc.lastAutoTable.finalY + 10;
+
+    doc.setFontSize(10);
+    doc.setTextColor(100);
+    doc.text("Subtotal:", 140, finalY);
+    doc.text(`PKR ${cartTotal.toLocaleString()}`, 190, finalY, {
+      align: "right",
+    });
+
+    doc.text("Shipping Fee:", 140, finalY + 7);
+    doc.text(`PKR ${SHIPPING_FEE.toLocaleString()}`, 190, finalY + 7, {
+      align: "right",
+    });
+
+    doc.setDrawColor(goldColor[0], goldColor[1], goldColor[2]);
+    doc.setLineWidth(0.5);
+    doc.line(130, finalY + 12, 190, finalY + 12);
+
+    doc.setFontSize(12);
+    doc.setFont("helvetica", "bold");
+    doc.setTextColor(darkColor[0], darkColor[1], darkColor[2]);
+    doc.text("Grand Total:", 140, finalY + 20);
+    doc.text(
+      `PKR ${(cartTotal + SHIPPING_FEE).toLocaleString()}`,
+      190,
+      finalY + 20,
+      { align: "right" },
+    );
+
+    // --- Footer ---
+    doc.setFontSize(9);
+    doc.setFont("helvetica", "italic");
+    doc.setTextColor(150);
+    doc.text("Thank you for choosing Pearion Collections!", 105, 280, {
+      align: "center",
+    });
+
+    doc.save(`Pearion-Invoice-${orderNumber}.pdf`);
+  };
   if (isCompleted) {
     return (
       <div className="pt-32 pb-20 min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="bg-white p-12 rounded-lg shadow-sm text-center max-w-md w-full">
+        <div className="bg-white p-12 rounded-lg shadow-sm text-center max-w-md w-full border-t-4 border-pearion-gold">
           <div className="flex justify-center mb-6">
             <CheckCircle size={64} className="text-green-500" />
           </div>
-          <h2 className="text-3xl font-serif mb-4">Order Confirmed!</h2>
-          <p className="text-gray-600 mb-8">
-            Thank you for shopping with Pearion. Your order will be processed
-            shortly.
+          <h2 className="text-3xl font-serif mb-2">Order Confirmed!</h2>
+          <p className="text-pearion-gold font-bold mb-4 tracking-widest uppercase">
+            ID: {orderNumber}
           </p>
-          <Link
-            href="/"
-            className="inline-block bg-pearion-dark text-white px-8 py-3 uppercase tracking-widest text-xs font-bold"
-          >
-            Return Home
-          </Link>
+          <p className="text-gray-600 mb-8">
+            Thank you for shopping with Pearion. We have sent a confirmation
+            email to <b>{email}</b>.
+          </p>
+
+          <div className="flex flex-col gap-4">
+            <button
+              onClick={downloadReceipt}
+              className="bg-pearion-gold text-white px-8 py-3 uppercase tracking-widest text-xs font-bold hover:bg-opacity-90"
+            >
+              Download PDF Receipt
+            </button>
+            <Link
+              href="/"
+              onClick={() => clearCart()}
+              className="inline-block bg-pearion-dark text-white px-8 py-3 uppercase tracking-widest text-xs font-bold"
+            >
+              Return Home
+            </Link>
+          </div>
         </div>
       </div>
     );
@@ -338,7 +457,6 @@ const CheckoutPage: React.FC = () => {
             <h3 className="font-serif text-xl mb-6">Order Summary</h3>
             <div className="space-y-4 mb-6 max-h-80 overflow-y-auto pr-2">
               {cart.map((item) => {
-                // Calculate active price (Discounted if exists)
                 const activePrice =
                   item.discountPrice && item.discountPrice > 0
                     ? item.discountPrice
@@ -365,7 +483,7 @@ const CheckoutPage: React.FC = () => {
                       <div>
                         <p className="font-medium text-gray-800">{item.name}</p>
                         <p className="text-gray-500 text-xs">
-                          {item.category.title}
+                          {item.category?.title}
                         </p>
                       </div>
                     </div>
@@ -416,9 +534,34 @@ const CheckoutPage: React.FC = () => {
                 </div>
               )}
 
-              <div className="flex justify-between">
-                <span>Shipping</span>
-                <span>PKR {SHIPPING_FEE.toLocaleString()}</span>
+              <div className="border-t border-gray-100 pt-4 space-y-2 text-sm text-gray-600">
+                <div className="flex justify-between">
+                  <span>Subtotal</span>
+                  <span>PKR {cartTotal.toLocaleString()}</span>
+                </div>
+
+                <div className="flex justify-between items-center">
+                  <span>Shipping</span>
+                  {isFreeShipping ? (
+                    <div className="flex flex-col items-end">
+                      <span className="text-green-600 font-bold tracking-tight uppercase text-[10px] bg-green-50 px-2 py-0.5 rounded border border-green-200">
+                        Free Shipping Applied
+                      </span>
+                      <span className="text-gray-400 line-through text-xs">
+                        PKR 300
+                      </span>
+                    </div>
+                  ) : (
+                    <span>PKR {SHIPPING_FEE.toLocaleString()}</span>
+                  )}
+                </div>
+
+                {/* Agar 3 items nahi hain to promo dikhaein */}
+                {!isFreeShipping && (
+                  <p className="text-[10px] text-pearion-gold italic">
+                    Tip: Add {3 - cartCount} more items to get FREE shipping!
+                  </p>
+                )}
               </div>
             </div>
 

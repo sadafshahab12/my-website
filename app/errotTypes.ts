@@ -5,7 +5,7 @@ export enum ErrorVariant {
   WARNING = "warning",
   INFO = "info",
   MAINTENANCE = "maintenance",
-  SUCCESS = "success", // While rare for error pages, useful for specific flows
+  SUCCESS = "success", 
 }
 
 export interface ErrorAction {

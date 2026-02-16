@@ -32,7 +32,7 @@ const HomePage: React.FC = () => {
     );
   }, [reviews]);
 
-  // Auto-slide effect — only this one
+
   useEffect(() => {
     const interval = setInterval(nextReview, 5000);
     return () => clearInterval(interval);
@@ -44,7 +44,7 @@ const HomePage: React.FC = () => {
   };
   useEffect(() => {
     const fetchData = async () => {
-      const MIN_LOADING_TIME = 800; // minimum time for loading in ms
+      const MIN_LOADING_TIME = 800; 
       const startTime = Date.now();
 
       try {
@@ -78,7 +78,7 @@ const HomePage: React.FC = () => {
           client.fetch(categoryQuery),
         ]);
 
-        // Calculate elapsed time
+
         const elapsed = Date.now() - startTime;
         const remainingTime = MIN_LOADING_TIME - elapsed;
 

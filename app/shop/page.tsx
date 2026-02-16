@@ -103,10 +103,10 @@ const ShopPage: React.FC = () => {
     );
 
     return [
-      // 👇 ADD "All" HERE (frontend only)
+ 
       { title: "All", slug: "all" },
 
-      // 👇 real categories from Sanity
+     
       ...uniqueCats.map((c) => ({
         title: c.title,
         slug: c.slug.current,
@@ -138,11 +138,11 @@ const ShopPage: React.FC = () => {
     ],
     [dbProducts],
   );
-  // Filtering and Sorting Logic
+ 
   const processedProducts = useMemo(() => {
     let list: Product[] = [...dbProducts];
 
-    // Apply search first
+  
     if (searchQuery) {
       list = searchProducts(list, searchQuery);
     }
@@ -218,7 +218,7 @@ const ShopPage: React.FC = () => {
     setSelectedColor("All");
     setPriceRange([0, 50000]);
     setSortBy("all");
-    router.push("/shop"); // Reset URL and search query
+    router.push("/shop"); 
   };
   if (isLoading) {
     return <Loading />;
@@ -291,7 +291,7 @@ const ShopPage: React.FC = () => {
                 <input
                   type="range"
                   min="0"
-                  max={maxProductPrice} // Dynamic Max
+                  max={maxProductPrice} 
                   step="100"
                   value={priceRange[1]}
                   onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
@@ -304,7 +304,6 @@ const ShopPage: React.FC = () => {
                 <h3 className="font-serif text-lg mb-4 border-b pb-2 font-semibold">
                   Occasion
                 </h3>
-                {/* Container with fixed height and scroll */}
                 <div className="max-h-40 overflow-y-auto pr-2 custom-scrollbar">
                   <ul className="space-y-1">
                     {occasions.map((o) => (

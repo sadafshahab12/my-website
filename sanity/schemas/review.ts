@@ -21,14 +21,13 @@ export const review = defineType({
       name: "rating",
       title: "Rating",
       type: "number",
-      validation: (Rule) =>
-        Rule.required().min(1).max(5).integer(),
+      validation: (Rule) => Rule.required().min(1).max(5).integer(),
     }),
     defineField({
       name: "product",
       title: "Product",
       type: "reference",
-      to: [{ type: "product" }],
+      to: [{ type: "product" }, { type: "sale" }],
     }),
   ],
   preview: {
@@ -42,7 +41,7 @@ export const review = defineType({
         title: selection.title,
         subtitle: `${selection.rating} ⭐ - ${selection.subtitle.substring(
           0,
-          50
+          50,
         )}...`,
       };
     },

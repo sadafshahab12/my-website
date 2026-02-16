@@ -23,7 +23,6 @@ const SearchOverlay: React.FC<SearchOverlayProps> = ({ isOpen, onClose }) => {
   const inputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
 
-  // 1. Prevent body scroll when overlay is open
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = "hidden";

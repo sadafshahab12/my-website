@@ -6,6 +6,7 @@ import Navbar from "./components/Navbar";
 import CartDrawer from "./components/CartDrawer";
 import Footer from "./components/Footer";
 import Analytics from "./components/Analytics";
+import { Toaster } from "react-hot-toast";
 
 const outfit = Outfit({
   weight: ["400", "800"],
@@ -26,7 +27,7 @@ export const metadata: Metadata = {
     title: "Pearion Collections – Elegant Pearl & Jewelry Designs",
     description:
       "Discover Pearion Collections: Premium pearl and fashion jewelry crafted for every occasion.",
-    url: "", // replace with your website
+    url: "", 
     siteName: "Pearion Collections",
     images: [
       {
@@ -49,6 +50,17 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${outfit.className} ${outfit.style} antialiased`}>
+        <Toaster
+          position="bottom-center"
+          reverseOrder={false}
+          toastOptions={{
+  
+            duration: 3000,
+            style: {
+              zIndex: 9999, 
+            },
+          }}
+        />
         <Analytics />
         <CartProvider>
           <Navbar />

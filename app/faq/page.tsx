@@ -107,7 +107,7 @@ const FaqPage: React.FC = () => {
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
           {faqs.map((faq, index) => {
             const isOpen = openIndex === index;
-            // Add a separator header if category changes
+      
             const showCategory =
               index === 0 || faqs[index - 1].category !== faq.category;
 
