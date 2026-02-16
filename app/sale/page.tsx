@@ -182,7 +182,7 @@ const SalePage: React.FC = () => {
         </motion.div>
       </section>
 
-      <section className=" mx-auto px-4 -mt-8 relative z-50">
+      <section className=" mx-auto px-4 -mt-8 relative z-10">
         <div className="max-w-2xl mx-auto relative">
           <div className="bg-white rounded-2xl shadow-xl p-2 border border-gray-100">
             <div className="relative flex items-center">
