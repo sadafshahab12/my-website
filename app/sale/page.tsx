@@ -157,12 +157,11 @@ const SalePage: React.FC = () => {
           </div>
         )}
 
-        {/* 3. CONTENT CONTAINER */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
-          className="container mx-auto text-center relative z-10 px-6"
+          className=" mx-auto text-center relative z-10 px-6"
         >
           {/* Event Label (Badge) */}
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/90 backdrop-blur-sm shadow-sm border border-[#D4AF37]/20 text-[#D4AF37] text-[10px] md:text-xs font-bold uppercase mb-6 tracking-widest">
@@ -183,7 +182,7 @@ const SalePage: React.FC = () => {
         </motion.div>
       </section>
 
-      <section className="container mx-auto px-4 -mt-8 relative z-50">
+      <section className=" mx-auto px-4 -mt-8 relative z-50">
         <div className="max-w-2xl mx-auto relative">
           <div className="bg-white rounded-2xl shadow-xl p-2 border border-gray-100">
             <div className="relative flex items-center">
@@ -261,7 +260,7 @@ const SalePage: React.FC = () => {
       </section>
 
       {/* MAIN CONTENT */}
-      <main className="container mx-auto px-4 md:px-8 py-16">
+      <main className=" mx-auto px-4 md:px-8 py-16">
         <div className="flex flex-col md:flex-row md:items-center justify-between mb-12 gap-6">
           <div className="space-y-1">
             <h2 className="text-2xl md:text-3xl font-serif text-gray-800 flex items-center gap-3">
@@ -328,7 +327,7 @@ const SalePage: React.FC = () => {
           {filteredProducts.length > 0 ? (
             <motion.div
               layout
-              className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-4 gap-y-8 md:gap-x-8 md:gap-y-16"
+              className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-x-4 gap-y-8 md:gap-x-8 md:gap-y-16"
             >
               {filteredProducts.map((item) => (
                 <motion.div

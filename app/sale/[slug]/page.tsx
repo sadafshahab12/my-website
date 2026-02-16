@@ -131,7 +131,7 @@ const SaleDetailPage: React.FC = () => {
 
   return (
     <div className="pt-24 pb-20 bg-white max-w-7xl mx-auto">
-      <div className="container mx-auto px-4 md:px-8">
+      <div className=" mx-auto px-4 md:px-8">
         {/* Breadcrumb */}
         <nav className="text-xs text-gray-400 mb-8 uppercase tracking-widest">
           <Link href="/" className="hover:text-black transition-colors">
@@ -253,7 +253,7 @@ const SaleDetailPage: React.FC = () => {
 
             <div className="space-y-3 mb-8 border-y border-gray-100 py-6">
               {product.material && (
-                <div className="flex text-sm">
+                <div className="flex text-sm gap-2">
                   <span className="w-24 text-gray-400 uppercase text-[10px] font-bold tracking-widest">
                     Material
                   </span>
@@ -261,7 +261,7 @@ const SaleDetailPage: React.FC = () => {
                 </div>
               )}
               {product.occasions && product.occasions.length > 0 && (
-                <div className="flex text-sm">
+                <div className="flex text-sm gap-2">
                   <span className="w-24 text-gray-400 uppercase text-[10px] font-bold tracking-widest">
                     Occasion
                   </span>
@@ -273,39 +273,58 @@ const SaleDetailPage: React.FC = () => {
             </div>
 
             {/* Action Bar */}
-            <div className="flex flex-col sm:flex-row gap-4 mb-10">
-              <div className="flex items-center border border-gray-200 h-14">
-                <button
-                  onClick={() => setQty((q) => Math.max(1, q - 1))}
-                  className="px-4 hover:bg-gray-50 h-full transition-colors"
-                >
-                  <Minus size={14} />
-                </button>
+            <div className="flex flex-col gap-3 mb-10">
+              {/* Upper Row: Quantity and Wishlist for Mobile */}
+              <div className="flex items-center gap-3">
+                {/* Quantity Selector */}
+                <div className="flex items-center justify-center border border-gray-200 h-14 w-32 md:w-40 bg-white">
+                  <button
+                    type="button"
+                    onClick={() => setQty((q) => Math.max(1, q - 1))}
+                    className="flex-1 flex justify-center items-center hover:bg-gray-50 h-full transition-colors border-r border-gray-100"
+                  >
+                    <Minus size={14} />
+                  </button>
 
-                <span className="w-10 text-center font-medium">{qty}</span>
+                  <span className="w-12 text-center font-medium text-sm">
+                    {qty}
+                  </span>
 
-                <button
-                  disabled={qty >= product.stockQuantity}
-                  onClick={() => setQty((q) => q + 1)}
-                  className={`px-4 h-full transition-colors ${
-                    qty >= product.stockQuantity
-                      ? "text-gray-300 cursor-not-allowed"
-                      : "hover:bg-gray-50"
-                  }`}
-                >
-                  <Plus size={14} />
+                  <button
+                    type="button"
+                    disabled={qty >= product.stockQuantity}
+                    onClick={() => setQty((q) => q + 1)}
+                    className={`flex-1 flex justify-center items-center h-full transition-colors border-l border-gray-100 ${
+                      qty >= product.stockQuantity
+                        ? "text-gray-200 cursor-not-allowed"
+                        : "hover:bg-gray-50"
+                    }`}
+                  >
+                    <Plus size={14} />
+                  </button>
+                </div>
+
+                {/* Wishlist Button - Desktop par ye line ke aakhir mein hoga, mobile par yahan */}
+                <button className="h-14 flex-1 md:flex-none md:w-14 border border-gray-200 flex items-center justify-center hover:bg-gray-50 transition-colors rounded-sm group">
+                  <Heart
+                    size={20}
+                    className="text-gray-400 group-hover:text-red-500 transition-colors"
+                  />
                 </button>
               </div>
+
+              {/* Main Action Button */}
               <button
                 disabled={isOutOfStock}
                 onClick={() => addToCart(product, qty)}
-                className={`flex-1 h-14 uppercase tracking-[0.2em] text-xs font-bold transition-all
-                  ${isOutOfStock ? "bg-gray-100 text-gray-400 cursor-not-allowed" : "bg-black text-white hover:bg-gray-800 shadow-lg"}`}
+                className={`w-full py-4 uppercase tracking-[0.2em] text-[10px] md:text-xs font-bold transition-all rounded-sm
+      ${
+        isOutOfStock
+          ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+          : "bg-black text-white hover:bg-gray-900 active:scale-[0.98] shadow-md"
+      }`}
               >
                 {isOutOfStock ? "Sold Out" : "Add to Shopping Bag"}
-              </button>
-              <button className="h-14 w-14 border border-gray-200 flex items-center justify-center hover:bg-gray-50 transition-colors">
-                <Heart size={20} className="text-gray-400 hover:text-red-500" />
               </button>
             </div>
 
