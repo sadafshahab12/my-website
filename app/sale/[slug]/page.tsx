@@ -153,9 +153,9 @@ const SaleDetailPage: React.FC = () => {
                 <Image
                   src={urlFor(product.images[activeImg].asset).url()}
                   alt={product.images[activeImg]?.alt || product.name}
-                  width={600}
-                  height={600}
-                  className={`object-cover h-full transition-transform duration-700 group-hover:scale-110 ${isOutOfStock ? "grayscale" : ""}`}
+                  width={800}
+                  height={800}
+                  className={`object-cover h-full w-full transition-transform duration-700 group-hover:scale-110 ${isOutOfStock ? "grayscale" : ""}`}
                   priority
                 />
               )}
@@ -187,8 +187,9 @@ const SaleDetailPage: React.FC = () => {
                   <Image
                     src={urlFor(img.asset).url()}
                     alt={img.alt || "Thumbnail"}
-                    fill
-                    className="object-cover"
+                    width={600}
+                    height={600}
+                    className="object-cover h-full w-full"
                   />
                 </button>
               ))}
