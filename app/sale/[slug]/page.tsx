@@ -68,8 +68,7 @@ const SaleDetailPage: React.FC = () => {
           material,
           colors,
           occasions,
-          description,
-          careInstructions
+          description
         }`;
 
         const data = await client.fetch<SaleProduct>(query, {
@@ -252,6 +251,23 @@ const SaleDetailPage: React.FC = () => {
             </p>
 
             <div className="space-y-3 mb-8 border-y border-gray-100 py-6">
+              {product.colors && product.colors.length > 0 && (
+                <div className="mb-8">
+                  <span className="text-gray-400 uppercase text-[10px] font-bold tracking-widest block mb-4">
+                    Colors
+                  </span>
+                  <div className="flex flex-wrap gap-3">
+                    {product.colors.map((clr) => (
+                      <button
+                        key={clr}
+                        className="px-4 py-2 text-xs border border-gray-200 rounded-sm hover:border-black transition-all duration-300 uppercase tracking-wider"
+                      >
+                        {clr}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
               {product.material && (
                 <div className="flex text-sm gap-2">
                   <span className="w-24 text-gray-400 uppercase text-[10px] font-bold tracking-widest">

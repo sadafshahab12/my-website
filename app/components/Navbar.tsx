@@ -45,7 +45,10 @@ const Navbar: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    setMobileMenuOpen(false);
+    const toggleMobileMenu = () => {
+      setMobileMenuOpen(false);
+    };
+    toggleMobileMenu();
   }, [pathname]);
 
   // 2. Updated NavLinks array

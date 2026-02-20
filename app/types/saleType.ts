@@ -62,7 +62,6 @@ export interface SaleProduct {
   material?: string;
   colors?: string[];
   occasions?: string[];
-  careInstructions?: string;
 }
 export interface SaleHero {
   eventLabel: string;
