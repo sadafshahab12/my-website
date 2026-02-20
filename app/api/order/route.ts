@@ -65,12 +65,12 @@ export async function POST(req: NextRequest) {
           _ref: receiptAsset._id,
         },
       },
-      // Mapping products: Yahan hum item._type check kar rahe hain
+  
       products: products.map((p) => ({
         _key: uuidv4(),
         product: {
           _type: "reference",
-          _ref: p._id, // Sanity automatically links to 'product' or 'sale' via ID
+          _ref: p._id, 
         },
         quantity: p.quantity,
         priceAtPurchase:

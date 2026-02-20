@@ -78,9 +78,8 @@ const CheckoutPage: React.FC = () => {
       formData.append("paymentMethod", paymentMethod);
       formData.append("totalAmount", (cartTotal + SHIPPING_FEE).toString());
       formData.append("receipt", receipt);
-      formData.append("products", JSON.stringify(cart)); // Sanity will handle _type automatically
+      formData.append("products", JSON.stringify(cart));
 
-      // Ab hamesha isi endpoint par bhejain
       const res = await fetch("/api/order", {
         method: "POST",
         body: formData,

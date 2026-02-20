@@ -47,12 +47,17 @@ export const order = defineType({
       validation: (Rule) => Rule.required(),
     }),
     defineField({
+      name: "country",
+      title: "Country",
+      type: "string",
+      validation: (Rule) => Rule.required(),
+    }),
+    defineField({
       name: "postalCode",
       title: "Postal Code",
       type: "string",
     }),
 
-    // --- Products Section (The Hybrid Part) ---
     defineField({
       name: "products",
       title: "Ordered Items",
